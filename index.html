@@ -1,0 +1,3326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rifa El Milagro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0e14; --surface:#141520; --surface2:#1b1d2a; --surface3:#222538;
+  --border:#2a2d42; --border2:#353858;
+  --text:#e2e4f0; --text2:#8890b8; --text3:#525878;
+  --gold:#f0b840; --gold-dim:rgba(240,184,64,0.12);
+  --green:#34c472; --green-dim:rgba(52,196,114,0.12);
+  --red:#e05050;   --red-dim:rgba(224,80,80,0.1);
+  --blue:#5090f0;  --blue-dim:rgba(80,144,240,0.12);
+  --orange:#f07840;
+  --shadow:0 2px 12px rgba(0,0,0,0.3);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.5);
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 55% 40%,#1a1f38 0%,var(--bg) 70%)}
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg)}
+.brand{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.2rem}
+.brand span{color:var(--gold)}
+.brand-sub{color:var(--text3);font-size:.85rem;margin-bottom:2rem}
+.rtabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;margin-bottom:1.5rem}
+.rtab{padding:.6rem;border:none;background:transparent;color:var(--text2);
+  font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.rtab.on{background:var(--gold);color:#0d0e14;font-weight:700}
+
+/* FORM */
+.fg{margin-bottom:.85rem}
+label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text3);margin-bottom:.32rem}
+input,select{width:100%;background:var(--surface2);border:1.5px solid var(--border);
+  color:var(--text);padding:.6rem .85rem;border-radius:8px;font-family:'Outfit',sans-serif;
+  font-size:.9rem;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--gold);background:var(--surface3)}
+select option{background:var(--surface2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.65rem 1.1rem;border:none;border-radius:8px;font-family:'Outfit',sans-serif;
+  font-size:.88rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-full{width:100%}
+.btn-gold{background:var(--gold);color:#0d0e14}
+.btn-gold:hover{background:#f5c840;transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text)}
+.btn-red{background:var(--red);color:#fff} .btn-red:hover{background:#c04040}
+.btn-green{background:var(--green);color:#0d0e14} .btn-green:hover{background:#28b060}
+.btn-sm{padding:.3rem .65rem;font-size:.78rem;border-radius:6px}
+
+/* APP */
+#app{display:none}
+header{height:56px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;
+  position:sticky;top:0;z-index:100}
+.hbrand{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.hbrand span{color:var(--gold)}
+.hright{display:flex;align-items:center;gap:.75rem;font-size:.85rem}
+.badge{padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em}
+.b-seller{background:var(--blue-dim);color:var(--blue)}
+.b-admin{background:rgba(240,184,64,.2);color:var(--gold)}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);transition:all .3s}
+.sdot.off{background:var(--red);box-shadow:0 0 6px var(--red)}
+.sdot.loading{background:var(--orange);box-shadow:0 0 6px var(--orange);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.layout{display:grid;grid-template-columns:350px 1fr;min-height:calc(100vh - 56px)}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.25rem;
+  display:flex;flex-direction:column;gap:1.25rem;position:sticky;top:56px;
+  height:calc(100vh - 56px);overflow-y:auto}
+.phdr{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--text3);margin-bottom:.8rem;padding-bottom:.55rem;
+  border-bottom:1px solid var(--border)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.scard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .9rem}
+.scard .v{font-family:'Space Mono',monospace;font-size:1.35rem;font-weight:700;line-height:1}
+.scard .l{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.cg .v{color:var(--gold)} .cgn .v{color:var(--green)} .cr .v{color:var(--red)} .cb .v{color:var(--blue)}
+
+.content{padding:1.25rem;overflow-y:auto}
+.vtabs{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+  background:var(--surface2);margin-bottom:1.25rem}
+.vtab{flex:1;padding:.6rem;border:none;background:transparent;color:var(--text2);
+  font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.vtab.on{background:var(--surface3);color:var(--text);border-radius:8px}
+
+.frow{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.chip{padding:.28rem .75rem;border:1.5px solid var(--border);border-radius:20px;
+  background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;
+  font-size:.76rem;font-weight:500;cursor:pointer;transition:all .18s}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.cgn-chip{border-color:var(--green)!important;color:var(--green)!important;background:var(--green-dim)!important}
+.cr-chip{border-color:var(--red)!important;color:var(--red)!important;background:var(--red-dim)!important}
+.send{margin-left:auto} .send input{width:185px;font-size:.82rem;padding:.4rem .72rem}
+
+.ngrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:3px;margin-bottom:1.2rem}
+.nc{aspect-ratio:1;border-radius:6px;border:1.5px solid transparent;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
+  transition:all .14s;position:relative;overflow:hidden}
+.nc:hover{transform:scale(1.07);z-index:2;box-shadow:var(--shadow)}
+.nc .n{font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700}
+.nc .s{font-size:.4rem;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.nc.free{background:var(--surface2);border-color:var(--border)}
+.nc.free:hover{border-color:var(--gold);background:var(--gold-dim)}
+.nc.free .n{color:var(--text2)} .nc.free .s{color:var(--text3)}
+.nc.unpaid{background:var(--blue-dim);border-color:#4070d0}
+.nc.unpaid .n{color:var(--blue)} .nc.unpaid .s{color:#6090e0}
+.nc.paid{background:var(--green-dim);border-color:#30a860}
+.nc.paid .n{color:var(--green)} .nc.paid .s{color:#50b870}
+.pdot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%}
+.paid .pdot{background:var(--green)} .unpaid .pdot{background:var(--orange)}
+
+.pages{display:flex;gap:.35rem;justify-content:center;align-items:center;flex-wrap:wrap}
+.pg{padding:.3rem .62rem;border:1.5px solid var(--border);background:var(--surface2);
+  color:var(--text2);border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;
+  font-size:.77rem;transition:all .18s}
+.pg:hover,.pg.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.pg:disabled{opacity:.25;cursor:default}
+.pgi{font-size:.76rem;color:var(--text3);padding:0 .4rem}
+
+.twrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th{background:var(--surface2);color:var(--text2);padding:.62rem .85rem;text-align:left;
+  font-family:'Syne',sans-serif;font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.08em;font-weight:700;border-bottom:1px solid var(--border)}
+td{padding:.58rem .85rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.mono{font-family:'Space Mono',monospace;font-weight:700;color:var(--gold)}
+.pill{display:inline-block;padding:.17rem .52rem;border-radius:20px;font-size:.7rem;font-weight:600}
+.pp{background:var(--green-dim);color:var(--green)}
+.pu{background:var(--red-dim);color:var(--red)}
+.ps{background:var(--blue-dim);color:var(--blue)}
+.acell{display:flex;gap:.3rem;flex-wrap:wrap}
+
+.overlay{position:fixed;inset:0;background:rgba(5,6,12,.75);z-index:300;
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;
+  padding:1.75rem;width:100%;max-width:450px;box-shadow:var(--shadow-lg);
+  animation:popIn .2s ease;max-height:92vh;overflow-y:auto}
+@keyframes popIn{from{transform:scale(.93) translateY(8px);opacity:0}to{transform:scale(1);opacity:1}}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem}
+.mtitle{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700}
+.mnum{font-family:'Space Mono',monospace;font-size:1.7rem;font-weight:700;color:var(--gold);margin-top:2px}
+.xbtn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:1.2rem;padding:.2rem}
+.xbtn:hover{color:var(--red)}
+.mfoot{display:flex;gap:.65rem;margin-top:1.25rem}
+.mfoot .btn{flex:1}
+.drow{display:flex;justify-content:space-between;align-items:center;
+  padding:.48rem 0;border-bottom:1px solid var(--border)}
+.drow:last-child{border:none}
+.dk{color:var(--text3);font-size:.76rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.dv{font-weight:600;font-size:.9rem;text-align:right}
+
+.msg{padding:.58rem .82rem;border-radius:8px;font-size:.82rem;font-weight:500;
+  display:none;margin-top:.6rem}
+.msg.ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,196,114,.3);display:block}
+.msg.err{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,80,80,.3);display:block}
+
+.tstack{position:fixed;bottom:1.2rem;right:1.2rem;z-index:999;display:flex;flex-direction:column;gap:.4rem}
+.toast{background:var(--surface3);color:var(--text);padding:.65rem 1rem;border-radius:10px;
+  font-size:.82rem;font-weight:500;box-shadow:var(--shadow-lg);border:1px solid var(--border2);
+  animation:tIn .25s ease;max-width:290px}
+.toast.ok{border-color:rgba(52,196,114,.4);color:var(--green)}
+.toast.err{border-color:rgba(224,80,80,.4);color:var(--red)}
+@keyframes tIn{from{transform:translateX(14px);opacity:0}}
+
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:999;gap:1rem}
+.spin{width:34px;height:34px;border:3px solid var(--border2);border-top-color:var(--gold);
+  border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.leg{display:flex;gap:.9rem;flex-wrap:wrap;font-size:.74rem;color:var(--text3);margin-bottom:.8rem}
+.li{display:flex;align-items:center;gap:.4rem}
+.lsq{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+.qsr{
+  position:fixed;
+  z-index:200;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  max-height:260px;
+  overflow-y:auto;
+  display:none;
+  min-width:280px;
+  max-width:340px;
+  box-shadow:0 8px 32px rgba(0,0,0,.45);
+}
+.qsi{padding:.52rem .78rem;border-bottom:1px solid var(--border);cursor:pointer;font-size:.8rem;transition:background .15s}
+.qsi:last-child{border:none}
+.qsi:hover{background:var(--surface3)}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto}
+  .send input{width:130px}
+}
+@media(max-width:480px){
+  .ngrid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))}
+}
+
+/* ── PAYMENT STATES ───────────────────────────────*/
+/* confirmed paid = green (admin confirmed) */
+/* claimed = yellow/amber (seller reported, pending admin) */
+/* unpaid = blue (not paid yet) */
+.nc.claimed{background:rgba(240,184,64,0.15);border-color:#d09020}
+.nc.claimed .n{color:#f0b840} .nc.claimed .s{color:#c09020}
+.nc.abonado{background:rgba(80,200,140,.13);border-color:#30a860}
+.nc.abonado .n{color:var(--green)} .nc.abonado .s{color:#40c870}
+.claimed .pdot{background:#f0b840}
+
+/* seller form pay checkbox */
+.pay-claim-wrap{
+  display:flex;align-items:center;gap:.75rem;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:8px;padding:.65rem .9rem;cursor:pointer;transition:border-color .2s;
+  user-select:none;
+}
+.pay-claim-wrap:hover{border-color:var(--gold)}
+.pay-claim-wrap.checked{background:rgba(240,184,64,0.08);border-color:var(--gold)}
+.pay-checkbox{
+  width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .18s;background:var(--surface3);
+}
+.pay-claim-wrap.checked .pay-checkbox{background:var(--gold);border-color:var(--gold)}
+.pay-checkbox-tick{color:#0d0e14;font-size:.85rem;font-weight:800;display:none}
+.pay-claim-wrap.checked .pay-checkbox-tick{display:block}
+.pay-claim-text{font-size:.88rem;line-height:1.4}
+.pay-claim-text strong{display:block;color:var(--text);font-weight:600}
+.pay-claim-text span{color:var(--text3);font-size:.75rem}
+
+/* admin pending badge */
+.pill-claim{background:rgba(240,184,64,0.18);color:#f0b840;border:1px solid rgba(240,184,64,0.35)}
+.pill-claim-row{
+  background:rgba(240,184,64,0.06);border:1px solid rgba(240,184,64,0.2);
+  border-radius:8px;padding:.6rem .85rem;font-size:.82rem;
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;
+}
+
+/* Pending approvals panel */
+.pending-banner{
+  background:rgba(240,184,64,0.08);border:1.5px solid rgba(240,184,64,0.3);
+  border-radius:10px;padding:1rem;margin-bottom:1.25rem;display:none;
+}
+.pending-banner-title{
+  font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--gold);
+  margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;
+}
+.pending-item{
+  display:flex;align-items:center;justify-content:space-between;gap:.5rem;
+  padding:.45rem 0;border-bottom:1px solid rgba(240,184,64,0.15);font-size:.82rem;
+}
+.pending-item:last-child{border:none}
+.pending-num{font-family:'Space Mono',monospace;font-weight:700;color:var(--gold);min-width:48px}
+
+/* ── SELLERS LIST (login) ─────────────────────────*/
+.seller-select{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);
+  color:var(--text);padding:.6rem .85rem;border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:.92rem;outline:none;
+  transition:border-color .2s;cursor:pointer;
+}
+.seller-select:focus{border-color:var(--gold);background:var(--surface3)}
+.seller-select option{background:var(--surface2)}
+
+/* ── MANAGE SELLERS MODAL ────────────────────────*/
+.seller-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem .75rem;border-bottom:1px solid var(--border);
+  font-size:.88rem;
+}
+.seller-item:last-child{border:none}
+.seller-item span{font-weight:500}
+
+/* ── SELLERS VIEW ────────────────────────────────*/
+.sv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem}
+.sv-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.sv-head{padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface2);border-bottom:1px solid var(--border)}
+.sv-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
+.sv-stats{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;border-bottom:1px solid var(--border)}
+.sv-stat{padding:.6rem .3rem;border-right:1px solid var(--border)}
+.sv-stat:last-child{border:none}
+.sv-stat .n{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;line-height:1}
+.sv-stat .l{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.sv-nums{padding:.75rem 1rem;max-height:140px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:.3rem}
+.sv-num{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;
+  padding:.2rem .45rem;border-radius:5px;cursor:pointer;transition:transform .12s}
+.sv-num:hover{transform:scale(1.1)}
+.sv-num.paid{background:var(--green-dim);color:var(--green);border:1px solid #30a860}
+.sv-num.claimed{background:rgba(240,184,64,.15);color:#f0b840;border:1px solid #d09020}
+.sv-num.unpaid{background:var(--blue-dim);color:var(--blue);border:1px solid #4070d0}
+
+/* ── OFFLINE BANNER ──────────────────────────────*/
+#offline-banner{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:#c03020;color:#fff;font-size:.82rem;font-weight:700;
+  text-align:center;padding:.45rem 1rem;letter-spacing:.03em;
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+#offline-banner.show{display:block}
+#offline-queue-count{
+  background:rgba(255,255,255,.25);border-radius:10px;
+  padding:.1rem .55rem;margin-left:.5rem;font-size:.78rem
+}
+
+/* ── CHANGELOG MODAL ─────────────────────────────*/
+.changelog-row{
+  display:flex;gap:.6rem;padding:.55rem .75rem;border-bottom:1px solid var(--border);
+  font-size:.78rem;align-items:flex-start;
+}
+.changelog-row:last-child{border:none}
+.changelog-num{font-family:'Space Mono',monospace;font-weight:700;color:var(--gold);min-width:52px}
+.changelog-action{
+  display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.7rem;
+  font-weight:700;margin-right:.4rem;text-transform:uppercase;letter-spacing:.04em
+}
+.ca-register{background:rgba(80,200,140,.15);color:var(--green)}
+.ca-edit{background:rgba(100,150,240,.15);color:var(--blue)}
+.ca-delete{background:rgba(220,60,50,.15);color:var(--red)}
+.ca-pay{background:rgba(200,150,10,.15);color:var(--gold)}
+.ca-abono{background:rgba(80,200,140,.1);color:#40c870}
+
+/* ── DELETE CONFIRM MODAL ────────────────────────*/
+#del-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;
+  display:none;align-items:center;justify-content:center;
+}
+#del-modal-overlay.open{display:flex}
+#del-modal{
+  background:var(--surface);border:1px solid var(--red);border-radius:14px;
+  padding:1.75rem;max-width:380px;width:90%;text-align:center;
+  box-shadow:0 0 40px rgba(220,60,50,.3);
+}
+#del-modal .del-icon{font-size:2.5rem;margin-bottom:.5rem}
+#del-modal .del-title{font-size:1.1rem;font-weight:800;color:var(--red);margin-bottom:.4rem}
+#del-modal .del-info{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:1.25rem}
+#del-modal .del-confirm-input{
+  width:100%;text-align:center;font-family:'Space Mono',monospace;font-size:1rem;
+  background:var(--surface2);border:1.5px solid var(--border2);color:var(--text);
+  border-radius:8px;padding:.5rem;margin-bottom:1rem;outline:none;
+}
+#del-modal .del-confirm-input:focus{border-color:var(--red)}
+#del-modal .del-foot{display:flex;gap:.6rem;justify-content:center}
+
+/* ── SELLER SIMPLIFIED VIEW ──────────────────────*/
+#seller-app { display:none; flex-direction:column; min-height:100vh; }
+#seller-app header { display:flex;justify-content:space-between;align-items:center;
+  padding:.75rem 1.25rem;background:var(--surface);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50; }
+.seller-body { max-width:480px;margin:0 auto;padding:1.25rem;width:100%; }
+
+/* Número buscador grande */
+.seller-num-search { position:relative;margin-bottom:1.25rem }
+.seller-num-search input {
+  width:100%;font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;
+  text-align:center;letter-spacing:.18em;padding:.75rem;
+  background:var(--surface2);border:2px solid var(--border2);
+  border-radius:12px;color:var(--text);outline:none;
+  transition:border-color .2s;
+}
+.seller-num-search input:focus { border-color:var(--gold) }
+.seller-num-hint {
+  margin-top:.6rem;border-radius:10px;padding:.85rem 1rem;
+  font-size:.88rem;text-align:center;font-weight:600;
+  transition:all .2s;
+}
+.snh-free    { background:rgba(80,200,140,.1);border:1px solid #30a860;color:var(--green) }
+.snh-taken   { background:rgba(220,60,50,.08);border:1px solid var(--red);color:var(--red) }
+.snh-empty   { background:var(--surface2);border:1px dashed var(--border2);color:var(--text3) }
+
+/* Panel financiero admin */
+.finance-panel {
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r);padding:1rem;margin-bottom:1rem;
+}
+.finance-panel .fp-title {
+  font-size:.75rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--text3);margin-bottom:.75rem;
+}
+.finance-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.85rem;
+}
+.finance-row:last-child { border:none }
+.finance-row .fr-label { color:var(--text2) }
+.finance-row .fr-val   { font-family:'Space Mono',monospace;font-weight:700 }
+.finance-bar-wrap { margin-top:.75rem }
+.finance-bar-bg   { height:10px;background:var(--surface3);border-radius:5px;overflow:hidden }
+.finance-bar-fill { height:100%;border-radius:5px;
+  background:linear-gradient(90deg,var(--green),#50e090);transition:width .5s }
+.finance-bar-label { display:flex;justify-content:space-between;
+  font-size:.72rem;color:var(--text3);margin-top:.3rem }
+
+/* Mis ventas (seller) */
+.my-sales-list { display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem }
+.my-sale-row {
+  display:flex;align-items:center;gap:.75rem;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:.6rem .85rem;font-size:.83rem;
+  cursor:pointer;transition:border-color .15s;
+}
+.my-sale-row:hover { border-color:var(--gold) }
+.my-sale-num { font-family:'Space Mono',monospace;font-weight:700;
+  color:var(--gold);min-width:48px }
+.my-sale-name { flex:1;font-weight:600 }
+.my-sale-badge { font-size:.72rem;padding:.15rem .45rem;border-radius:10px;font-weight:700 }
+
+/* Seller detail panel */
+.sd-panel {
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:1rem;margin-top:.75rem;
+}
+.sd-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem }
+.sd-num { font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--gold) }
+.sd-name { font-size:1rem;font-weight:700;margin-bottom:.1rem }
+.sd-phone { font-size:.8rem;color:var(--text3) }
+.sd-row { display:flex;justify-content:space-between;
+  font-size:.82rem;padding:.3rem 0;border-bottom:1px solid var(--border) }
+.sd-row:last-of-type { border:none }
+.sd-lbl { color:var(--text3) }
+.sd-val { font-weight:600 }
+.sd-actions { margin-top:.85rem;display:flex;flex-direction:column;gap:.5rem }
+.sd-section-title { font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--text3);margin:.6rem 0 .35rem }
+
+/* ── MÉTODO DE PAGO ───────────────────────────────*/
+.pay-method-row{display:flex;gap:.5rem;margin-top:.3rem}
+.pay-method-btn{
+  flex:1;padding:.55rem .4rem;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--surface2);color:var(--text2);font-size:.82rem;font-weight:600;
+  cursor:pointer;text-align:center;transition:all .15s;
+}
+.pay-method-btn:hover{border-color:var(--gold);color:var(--text)}
+.pay-method-btn.on{background:rgba(200,150,10,.12);border-color:var(--gold);color:var(--gold)}
+
+/* ── ABONOS ───────────────────────────────────────*/
+.abono-bar{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-top:.75rem}
+.abono-bar-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.6rem}
+.abono-progress{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin:.4rem 0}
+.abono-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),#50e090);transition:width .4s}
+.abono-row{display:flex;justify-content:space-between;font-size:.78rem;margin-top:.3rem}
+.abono-row .lbl{color:var(--text3)}
+.abono-row .val{font-family:'Space Mono',monospace;font-weight:700}
+.abono-claim-wrap{
+  display:flex;align-items:center;gap:.75rem;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:8px;padding:.65rem .9rem;margin-top:.5rem
+}
+.abono-claim-wrap .aci{display:flex;flex-direction:column;gap:.25rem;flex:1}
+.abono-claim-wrap .aci input{
+  background:var(--surface3);border:1px solid var(--border2);color:var(--text);
+  border-radius:6px;padding:.35rem .6rem;font-family:'Space Mono',monospace;
+  font-size:.9rem;width:100%;outline:none
+}
+.abono-claim-wrap .aci input:focus{border-color:var(--gold)}
+.abono-pending-banner{
+  background:rgba(80,200,140,.07);border:1.5px solid rgba(80,200,140,.25);
+  border-radius:10px;padding:1rem;margin-top:.75rem
+}
+.abono-pending-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.82rem;gap:.5rem
+}
+.abono-pending-item:last-child{border:none}
+
+/* ── ABONOS ───────────────────────────────────────*/
+.drop-zone{
+  border:2px dashed var(--border2);border-radius:10px;
+  padding:2rem 1rem;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--surface2);
+}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold);background:var(--gold-dim)}
+.drop-zone input[type=file]{display:none}
+.drop-icon{font-size:2rem;margin-bottom:.5rem}
+.drop-label{color:var(--text2);font-size:.88rem}
+.drop-label strong{color:var(--gold)}
+.import-preview{
+  max-height:180px;overflow-y:auto;
+  border:1px solid var(--border);border-radius:8px;
+  font-size:.78rem;margin-top:.75rem;display:none;
+}
+.imp-row{padding:.4rem .75rem;border-bottom:1px solid var(--border);display:flex;gap:.5rem;align-items:center}
+.imp-row:last-child{border:none}
+.imp-ok{color:var(--green)} .imp-err{color:var(--red)} .imp-skip{color:var(--text3)}
+
+/* ── PRINT / PDF ──────────────────────────────────*/
+@media print {
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  body { background:#fff !important; color:#111 !important; font-family:Arial,sans-serif !important; }
+  #login-screen,#app,#splash { display:none !important; }
+  #print-area { display:block !important; }
+  .no-print { display:none !important; }
+  .print-page { page-break-after:always; padding:1.5cm; }
+  .print-page:last-child { page-break-after:auto; }
+}
+#print-area { display:none; }
+.print-hdr { display:flex; justify-content:space-between; align-items:flex-start;
+  border-bottom:3px solid #1a1a2a; padding-bottom:1rem; margin-bottom:1.5rem; }
+.print-title { font-size:1.6rem; font-weight:800; letter-spacing:-.02em; }
+.print-title span { color:#c8960a; }
+.print-meta { font-size:.8rem; color:#555; text-align:right; line-height:1.7; }
+.print-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+.pstat { border:1.5px solid #ddd; border-radius:8px; padding:.75rem 1rem; text-align:center; }
+.pstat .pv { font-size:1.5rem; font-weight:800; }
+.pstat .pl { font-size:.7rem; color:#888; text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+.pstat.gold .pv{color:#c8960a} .pstat.green .pv{color:#1a7a3a} .pstat.red .pv{color:#c03020}
+.print-section-title {
+  font-size:1rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:#1a1a2a; margin:1.5rem 0 .75rem;
+  padding-bottom:.4rem; border-bottom:1.5px solid #eee;
+}
+.print-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+.print-table th { background:#1a1a2a !important; color:#fff !important;
+  padding:.5rem .75rem; text-align:left; font-size:.7rem;
+  text-transform:uppercase; letter-spacing:.07em; }
+.print-table td { padding:.45rem .75rem; border-bottom:1px solid #eee; }
+.print-table tr:nth-child(even) td { background:#f8f8f8 !important; }
+.print-num { font-weight:800; font-family:monospace; font-size:.9rem; }
+.pbadge { display:inline-block; padding:.12rem .45rem; border-radius:12px;
+  font-size:.68rem; font-weight:600; }
+.pbadge.paid { background:#d8f0e0 !important; color:#1a7a3a; }
+.pbadge.unpaid { background:#fde8e4 !important; color:#c03020; }
+.seller-section { margin-bottom:1.2rem; }
+.seller-name { font-size:.9rem; font-weight:700; color:#1a1a2a;
+  margin-bottom:.4rem; padding:.3rem .6rem; background:#f0f0f0 !important;
+  border-radius:4px; display:flex; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800">
+    Rifa <span style="color:var(--gold)">El Milagro</span>
+  </div>
+  <div class="spin"></div>
+  <div style="color:var(--text3);font-size:.82rem" id="splash-msg">Iniciando…</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div style="width:100%;max-width:420px;padding:1rem">
+    <div class="lcard">
+      <div class="brand">Rifa <span>El Milagro</span></div>
+      <div class="brand-sub">Rifa El Milagro — Sistema de ventas</div>
+      <div class="rtabs">
+        <button class="rtab on" onclick="setMode('seller')">👤 Vendedor</button>
+        <button class="rtab"    onclick="setMode('admin')">🔐 Admin</button>
+      </div>
+      <div id="pane-s">
+        <div class="fg">
+          <label>Usuario</label>
+          <input id="inp-sn" type="text" placeholder="Tu usuario (ej: ana.lopez)"
+            autocomplete="username"
+            onkeydown="if(event.key==='Enter')document.getElementById('inp-sc').focus()">
+        </div>
+        <div class="fg">
+          <label>Contraseña</label>
+          <input id="inp-sc" type="password" placeholder="Tu contraseña"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <div id="pane-a" style="display:none">
+        <div class="fg">
+          <label>Contraseña administrador</label>
+          <input id="inp-ap" type="password" placeholder="Contraseña admin"
+            onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <div id="lmsg" class="msg"></div>
+      <button class="btn btn-gold btn-full" style="margin-top:1rem" onclick="doLogin()">
+        Entrar →
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- OFFLINE BANNER -->
+<div id="offline-banner">
+  ⚠️ Sin conexión — los cambios se guardan localmente
+  <span id="offline-queue-count"></span>
+  y se sincronizarán al recuperar la conexión
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="del-modal-overlay">
+  <div id="del-modal">
+    <div class="del-icon">🗑️</div>
+    <div class="del-title">Eliminar número</div>
+    <div class="del-info" id="del-modal-info"></div>
+    <input class="del-confirm-input" id="del-confirm-input"
+      placeholder='Escribe "ELIMINAR" para confirmar'
+      oninput="document.getElementById('del-confirm-btn').disabled=this.value!=='ELIMINAR'">
+    <div class="del-foot">
+      <button class="btn btn-ghost" onclick="closeDel()">Cancelar</button>
+      <button class="btn btn-red" id="del-confirm-btn" disabled onclick="executeDel()">
+        Sí, eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGELOG MODAL -->
+<div class="overlay" id="mcl" onclick="if(event.target===this)closeCL()">
+  <div class="modal" style="max-width:600px">
+    <div class="mhdr">
+      <div>
+        <div class="mtitle">📋 Historial de cambios</div>
+        <div style="color:var(--text3);font-size:.78rem;margin-top:.2rem">Últimas acciones registradas</div>
+      </div>
+      <button class="xbtn" onclick="closeCL()">✕</button>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="exportChangelogCSV()">📊 Exportar historial</button>
+      <button class="btn btn-red btn-sm"   onclick="clearChangelog()">🗑 Limpiar</button>
+    </div>
+    <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:8px" id="cl-list">
+      <div style="text-align:center;padding:2rem;color:var(--text3)">Sin registros aún</div>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER SIMPLIFIED APP -->
+<div id="seller-app">
+  <header>
+    <div class="hbrand" style="font-size:1rem">Rifa <span>El Milagro</span></div>
+    <div class="hright">
+      <div class="sdot" id="sdot-s" title="Conectado"></div>
+      <span id="hname-s" style="font-size:.82rem;color:var(--text2)"></span>
+      <span class="badge b-seller" style="font-size:.7rem">Vendedor</span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="seller-body">
+
+    <!-- NÚMEROS DISPONIBLES -->
+    <div style="margin-bottom:1rem;text-align:center">
+      <button class="btn btn-ghost btn-sm" onclick="openNumDisponibles()" style="width:100%;padding:.6rem;font-size:.9rem">
+        📋 Ver números disponibles
+      </button>
+    </div>
+
+    <!-- BUSCADOR DE NÚMERO -->
+    <div class="phdr" style="margin-bottom:.5rem">🔍 Comprobar número</div>
+    <div class="seller-num-search">
+      <input id="sn-num" type="text" inputmode="numeric" maxlength="4"
+        placeholder="0000"
+        oninput="this.value=this.value.replace(/\D/g,'');checkSellerNum()"
+        onkeydown="if(event.key==='Enter')focusForm()">
+      <div class="seller-num-hint snh-empty" id="sn-hint">Escribe el número a comprobar</div>
+    </div>
+
+    <!-- FORMULARIO DE REGISTRO -->
+    <div id="sn-form" style="display:none">
+      <div class="phdr" style="margin-bottom:.75rem">🎟 Registrar venta — <span id="sn-form-num" style="color:var(--gold);font-family:'Space Mono',monospace"></span></div>
+
+      <div class="fg"><label>Nombre del comprador</label>
+        <input id="sf-name" type="text" placeholder="Nombre completo" autocomplete="off"></div>
+      <div class="fg"><label>Teléfono</label>
+        <input id="sf-phone" type="tel" placeholder="+34 600 000 000"></div>
+
+      <div class="fg">
+        <label>Pago</label>
+        <div class="pay-claim-wrap" id="sf-pay-wrap" onclick="toggleSFClaim()">
+          <div class="pay-checkbox"><span class="pay-checkbox-tick">✓</span></div>
+          <div class="pay-claim-text">
+            <strong>El comprador ya pagó (100€)</strong>
+            <span>Marcar provisionalmente — el admin confirmará</span>
+          </div>
+        </div>
+        <input type="hidden" id="sf-paid-claim" value="0">
+      </div>
+
+      <div class="fg">
+        <label>💰 Abono <span style="color:var(--text3);font-weight:400;font-size:.75rem">(opcional — máx. 100€)</span></label>
+        <input id="sf-abono" type="text" inputmode="numeric" placeholder="0"
+          style="font-family:'Space Mono',monospace"
+          oninput="this.value=this.value.replace(/\D/g,'');updateAbonoHint('sf-abono','sf-abono-hint')">
+        <div id="sf-abono-hint" style="font-size:.73rem;color:var(--text3);margin-top:.2rem"></div>
+      </div>
+
+      <div class="fg">
+        <label>💳 Método de pago</label>
+        <div class="pay-method-row">
+          <button type="button" class="pay-method-btn" id="sfpm-none"     onclick="setPayMethod('none','sf')"    >— Sin especificar</button>
+          <button type="button" class="pay-method-btn" id="sfpm-cash"     onclick="setPayMethod('cash','sf')"    >💵 Efectivo</button>
+          <button type="button" class="pay-method-btn" id="sfpm-transfer" onclick="setPayMethod('transfer','sf')">🏦 Transferencia</button>
+        </div>
+        <input type="hidden" id="sfpaymethod" value="">
+      </div>
+
+      <div style="display:flex;gap:.6rem;margin-top:.25rem">
+        <button class="btn btn-ghost" style="flex:1" onclick="resetSellerForm()">✕ Cancelar</button>
+        <button class="btn btn-gold"  style="flex:2" id="sf-submit" onclick="submitSellerForm()">✓ Registrar</button>
+      </div>
+      <div id="sf-msg" class="msg"></div>
+    </div>
+
+    <!-- MIS VENTAS -->
+    <div style="margin-top:1.5rem">
+      <div class="phdr">📋 Mis ventas</div>
+      <div id="my-sales-list" class="my-sales-list">
+        <div style="color:var(--text3);font-size:.82rem;text-align:center;padding:1rem">
+          Aún no hay ventas registradas
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLE VENTA (se abre al hacer clic en mis ventas) -->
+    <div id="sd-panel" class="sd-panel" style="display:none">
+      <div class="sd-header">
+        <div>
+          <div class="sd-num" id="sd-num"></div>
+          <div class="sd-name" id="sd-name"></div>
+          <div class="sd-phone" id="sd-phone"></div>
+        </div>
+        <button class="xbtn" onclick="closeSD()">✕</button>
+      </div>
+
+      <!-- Info actual -->
+      <div class="sd-row"><span class="sd-lbl">Estado pago</span><span class="sd-val" id="sd-estado"></span></div>
+      <div class="sd-row"><span class="sd-lbl">Abonado</span><span class="sd-val" id="sd-abonado"></span></div>
+      <div class="sd-row"><span class="sd-lbl">Saldo pendiente</span><span class="sd-val" id="sd-saldo"></span></div>
+      <div class="sd-row"><span class="sd-lbl">Método de pago</span><span class="sd-val" id="sd-metodo"></span></div>
+      <div id="sd-pending-notice" style="display:none;margin-top:.5rem;padding:.5rem .75rem;
+        background:rgba(240,184,64,.08);border:1px solid rgba(240,184,64,.3);
+        border-radius:8px;font-size:.78rem;color:#c09020">
+        🕐 Tienes un abono pendiente de confirmación por el admin
+      </div>
+
+      <div class="sd-actions">
+        <!-- Marcar pago provisional -->
+        <div id="sd-pay-section">
+          <div class="sd-section-title">💳 Pago</div>
+          <div class="pay-claim-wrap" id="sd-pay-wrap" onclick="toggleSDClaim()">
+            <div class="pay-checkbox"><span class="pay-checkbox-tick">✓</span></div>
+            <div class="pay-claim-text">
+              <strong>El comprador pagó completo (100€)</strong>
+              <span>El admin deberá confirmarlo</span>
+            </div>
+          </div>
+          <input type="hidden" id="sd-paid-claim" value="0">
+          <button class="btn btn-gold btn-full" style="margin-top:.5rem" id="sd-pay-btn" onclick="submitSDPay()">
+            Enviar al admin para confirmar
+          </button>
+          <div id="sd-pay-msg" class="msg"></div>
+        </div>
+
+        <!-- Reportar abono -->
+        <div id="sd-abono-section">
+          <div class="sd-section-title">💰 Reportar abono parcial</div>
+          <div style="display:flex;gap:.5rem;align-items:flex-start">
+            <div style="flex:1">
+              <input id="sd-abono-inp" type="text" inputmode="numeric" placeholder="Cantidad (€)"
+                style="font-family:'Space Mono',monospace"
+                oninput="this.value=this.value.replace(/\D/g,'');updateAbonoHint('sd-abono-inp','sd-abono-hint')">
+              <div id="sd-abono-hint" style="font-size:.73rem;color:var(--text3);margin-top:.2rem"></div>
+            </div>
+            <button class="btn btn-green" style="flex-shrink:0;margin-top:0" onclick="submitSDAbono()">
+              + Abonar
+            </button>
+          </div>
+          <div id="sd-abono-msg" class="msg"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- APP (ADMIN) -->
+<div id="app">
+  <header>
+    <div class="hbrand">Rifa <span>El Milagro</span></div>
+    <div class="hright">
+      <div class="sdot" id="sdot" title="Conectado"></div>
+      <span id="hname" style="font-size:.85rem;color:var(--text2)"></span>
+      <span id="hbadge" class="badge"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="sidebar">
+      <!-- STATS -->
+      <div>
+        <div class="phdr">📊 Estadísticas en vivo</div>
+        <div class="sgrid">
+          <div class="scard cg"  style="cursor:pointer" onclick="goToFilter('sold')"   title="Ver vendidos">  <div class="v" id="ss">0</div>    <div class="l">Vendidos</div></div>
+          <div class="scard"     style="cursor:pointer" onclick="goToFilter('free')"   title="Ver disponibles"><div class="v" id="sf">10000</div><div class="l">Disponibles</div></div>
+          <div class="scard cgn" style="cursor:pointer" onclick="goToFilter('paid')"   title="Ver pagados">   <div class="v" id="sp">0</div>    <div class="l">Confirmados</div></div>
+          <div class="scard cr"  style="cursor:pointer" onclick="goToFilter('unpaid')" title="Ver sin pagar"> <div class="v" id="su">0</div>    <div class="l">Sin pagar</div></div>
+        </div>
+        <div id="stat-abono-wrap" style="display:none;margin-top:.5rem">
+          <div class="scard" style="background:rgba(80,200,140,.08);border-color:rgba(80,200,140,.3);grid-column:span 2;cursor:pointer"
+            onclick="goToFilter('abonado')" title="Ver con abono">
+            <div class="v" id="sab" style="color:var(--green)">0</div>
+            <div class="l" style="color:#30a860">Con abono parcial</div>
+          </div>
+        </div>
+        <div id="stat-pending-wrap" style="display:none;margin-top:.5rem">
+          <div class="scard" style="background:rgba(240,184,64,0.08);border-color:rgba(240,184,64,0.3);grid-column:span 2;cursor:pointer"
+            onclick="goToFilter('claimed')" title="Ver pago reportado">
+            <div class="v" id="sq" style="color:var(--gold)">0</div>
+            <div class="l" style="color:#c09020">Pend. confirmación admin</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL FINANCIERO (admin only) -->
+      <div id="finance-panel-wrap" style="display:none">
+        <div class="finance-panel">
+          <div class="fp-title">💶 Resumen financiero</div>
+          <div class="finance-row">
+            <span class="fr-label">✅ Pagos confirmados</span>
+            <span class="fr-val" id="fp-confirmed" style="color:var(--green)">0 €</span>
+          </div>
+          <div class="finance-row">
+            <span class="fr-label">💰 Abonos confirmados</span>
+            <span class="fr-val" id="fp-abonos" style="color:var(--green)">0 €</span>
+          </div>
+          <div class="finance-row" style="font-weight:700;font-size:.92rem">
+            <span class="fr-label" style="color:var(--text)">Total recaudado</span>
+            <span class="fr-val"   id="fp-total" style="color:var(--gold);font-size:1rem">0 €</span>
+          </div>
+          <div class="finance-row">
+            <span class="fr-label" style="color:#c09020">🕐 Pendiente de cobrar</span>
+            <span class="fr-val"   id="fp-pending" style="color:#c09020">0 €</span>
+          </div>
+          <div class="finance-row">
+            <span class="fr-label">🎯 Objetivo (vendidos × 100€)</span>
+            <span class="fr-val" id="fp-goal" style="color:var(--text2)">0 €</span>
+          </div>
+          <div class="finance-bar-wrap">
+            <div class="finance-bar-bg">
+              <div class="finance-bar-fill" id="fp-bar" style="width:0%"></div>
+            </div>
+            <div class="finance-bar-label">
+              <span>Recaudado</span>
+              <span id="fp-pct" style="font-weight:700;color:var(--green)">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENDING APPROVALS (admin only) -->
+      <div id="pending-banner" class="pending-banner">
+        <div class="pending-banner-title">
+          <span>⏳ Pagos reportados — pendientes de confirmar</span>
+          <span id="pending-count" style="background:var(--gold);color:#0d0e14;border-radius:20px;padding:.1rem .55rem;font-size:.75rem">0</span>
+        </div>
+        <div id="pending-list"></div>
+      </div>
+
+      <!-- ABONOS PENDIENTES (admin only) -->
+      <div id="abonos-banner" class="abono-pending-banner" style="display:none">
+        <div class="pending-banner-title" style="color:var(--green)">
+          <span>💰 Abonos reportados — pendientes de confirmar</span>
+          <span id="abonos-count" style="background:var(--green);color:#0d0e14;border-radius:20px;padding:.1rem .55rem;font-size:.75rem">0</span>
+        </div>
+        <div id="abonos-list"></div>
+      </div>
+
+      <!-- FORM -->
+      <div>
+        <div class="phdr">🎟 Registrar Venta</div>
+        <div class="fg">
+          <label>Número de rifa</label>
+          <input id="fn" type="text" inputmode="numeric" maxlength="4" placeholder="0000 – 9999"
+            style="font-family:'Space Mono',monospace;font-size:1.1rem;text-align:center;letter-spacing:.12em"
+            oninput="this.value=this.value.replace(/\D/g,'')">
+        </div>
+        <div class="fg"><label>Nombre del comprador</label><input id="fname" type="text" placeholder="Nombre completo"></div>
+        <div class="fg"><label>Teléfono</label><input id="fphone" type="tel" placeholder="+1 555 000-0000"></div>
+        <div class="fg"><label>Vendedor</label><input id="fseller" type="text" placeholder="Nombre del vendedor"></div>
+
+        <!-- Seller sees a checkbox; admin sees a full select -->
+        <div class="fg" id="form-pay-seller">
+          <label>Pago</label>
+          <div class="pay-claim-wrap" id="pay-claim-wrap" onclick="togglePayClaim()">
+            <div class="pay-checkbox"><span class="pay-checkbox-tick">✓</span></div>
+            <div class="pay-claim-text">
+              <strong>El comprador ya pagó (100€)</strong>
+              <span>Marcar provisionalmente — el admin confirmará</span>
+            </div>
+          </div>
+          <input type="hidden" id="fpaid-claim" value="0">
+        </div>
+        <div class="fg" id="form-pay-admin" style="display:none">
+          <label>Estado de pago (admin)</label>
+          <select id="fpaid">
+            <option value="0">⏳ Sin pagar</option>
+            <option value="claim">🕐 Pago reportado (pendiente)</option>
+            <option value="1">✅ Pagado confirmado (100€)</option>
+          </select>
+        </div>
+
+        <!-- ABONO al registrar -->
+        <div class="fg" id="form-abono-wrap">
+          <label>💰 Abono inicial <span style="color:var(--text3);font-weight:400;font-size:.75rem">(opcional — máx. 100€)</span></label>
+          <input id="fabono" type="text" inputmode="numeric" placeholder="0"
+            style="font-family:'Space Mono',monospace"
+            oninput="this.value=this.value.replace(/\D/g,'');updateAbonoHint('fabono','fabono-hint')">
+          <div id="fabono-hint" style="font-size:.73rem;color:var(--text3);margin-top:.2rem"></div>
+        </div>
+
+        <!-- MÉTODO DE PAGO -->
+        <div class="fg">
+          <label>💳 Método de pago</label>
+          <div class="pay-method-row">
+            <button type="button" class="pay-method-btn" id="fpm-none"  onclick="setPayMethod('none','f')" >— Sin especificar</button>
+            <button type="button" class="pay-method-btn" id="fpm-cash"  onclick="setPayMethod('cash','f')" >💵 Efectivo</button>
+            <button type="button" class="pay-method-btn" id="fpm-transfer" onclick="setPayMethod('transfer','f')">🏦 Transferencia</button>
+          </div>
+          <input type="hidden" id="fpaymethod" value="">
+        </div>
+        <button class="btn btn-gold btn-full" id="submit-btn" onclick="submitSale()">✓ Registrar número</button>
+        <div id="fmsg" class="msg"></div>
+      </div>
+
+      <!-- QUICK SEARCH -->
+      <div>
+        <div class="phdr">🔍 Búsqueda rápida</div>
+        <input type="text" id="qsi2" placeholder="Número, nombre, vendedor…" oninput="quickSearch()">
+        <div class="qsr" id="qsr"></div>
+      </div>
+
+      <!-- EXPORT & IMPORT -->
+      <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)">
+        <div class="phdr">⬇ Exportar / ⬆ Importar</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <button class="btn btn-gold btn-full" onclick="exportPDF()">📄 Reporte PDF</button>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-ghost btn-full" onclick="exportCSV()">📊 Descargar CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="loadData()" title="Actualizar datos">↻</button>
+          </div>
+          <button class="btn btn-ghost btn-full" id="import-btn" onclick="openImport()" style="border-color:var(--blue);color:var(--blue)">
+            ⬆ Importar CSV
+          </button>
+          <button class="btn btn-ghost btn-full" id="btn-changelog" onclick="openCL()"
+            style="display:none;border-color:#7060d0;color:#9080f0">
+            📋 Historial de cambios
+          </button>
+          <button class="btn btn-ghost btn-full" id="btn-sellers" onclick="openSellers()"
+            style="display:none;border-color:var(--gold);color:var(--gold)">
+            👥 Gestionar vendedores
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="vtabs">
+        <button class="vtab on" onclick="setView('grid',this)">🔢 Grilla</button>
+        <button class="vtab"    onclick="setView('table',this)">📋 Lista</button>
+        <button class="vtab" id="tab-sellers" onclick="setView('sellers',this)" style="display:none">👥 Vendedores</button>
+      </div>
+
+      <!-- SELLERS VIEW (admin only) -->
+      <div id="vs" style="display:none">
+        <div id="sv-grid" class="sv-grid"></div>
+      </div>
+
+      <!-- GRID -->
+      <div id="vg">
+        <div class="leg">
+          <div class="li"><div class="lsq" style="background:var(--surface3);border:1.5px solid var(--border2)"></div>Disponible</div>
+          <div class="li"><div class="lsq" style="background:var(--blue-dim);border:1.5px solid #4070d0"></div>Sin pagar</div>
+          <div class="li"><div class="lsq" style="background:rgba(80,200,140,.13);border:1.5px solid #30a860"></div>Abonado 💰</div>
+          <div class="li"><div class="lsq" style="background:rgba(240,184,64,0.15);border:1.5px solid #d09020"></div>Pago reportado</div>
+          <div class="li"><div class="lsq" style="background:var(--green-dim);border:1.5px solid #30a860"></div>Pagado ✓</div>
+        </div>
+        <div class="frow">
+          <button class="chip on"  data-gf="all"     onclick="setGF('all',this)">Todos</button>
+          <button class="chip"     data-gf="free"    onclick="setGF('free',this)">Disponibles</button>
+          <button class="chip"     data-gf="sold"    onclick="setGF('sold',this)">Vendidos</button>
+          <button class="chip"     data-gf="paid"    onclick="setGF('paid',this)">Pagados</button>
+          <button class="chip"     data-gf="abonado" onclick="setGF('abonado',this)">💰 Abonado</button>
+          <button class="chip"     data-gf="claimed" onclick="setGF('claimed',this)">Pago reportado</button>
+          <button class="chip"     data-gf="unpaid"  onclick="setGF('unpaid',this)">Sin pagar</button>
+          <div class="send"><input id="gs" type="text" inputmode="numeric" maxlength="4"
+            placeholder="Buscar #…" oninput="gPage=0;renderGrid()"></div>
+        </div>
+        <div id="ngrid" class="ngrid"></div>
+        <div id="pgrid" class="pages"></div>
+      </div>
+
+      <!-- TABLE -->
+      <div id="vt" style="display:none">
+        <div class="frow">
+          <button class="chip on"   onclick="setTF('all',this)">Todos</button>
+          <button class="chip cgn-chip" onclick="setTF('paid',this)">Pagados</button>
+          <button class="chip" style="border-color:#30a860;color:var(--green)" onclick="setTF('abonado',this)">💰 Abonado</button>
+          <button class="chip" style="border-color:#d09020;color:#f0b840" onclick="setTF('claimed',this)">Pago reportado</button>
+          <button class="chip cr-chip"  onclick="setTF('unpaid',this)">Sin pagar</button>
+          <div class="send"><input id="ts" type="text" placeholder="Buscar…" oninput="renderTable()"></div>
+        </div>
+        <div class="twrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Nombre</th><th>Teléfono</th>
+                <th>Vendedor</th><th>Pago</th><th>Abono</th><th>Fecha</th>
+                <th id="th-adm" style="display:none">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div id="tinfo" style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:.6rem"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div class="overlay" id="md" onclick="if(event.target===this)closeD()">
+  <div class="modal">
+    <div class="mhdr">
+      <div><div class="mtitle" id="dtitle"></div><div class="mnum" id="dnum"></div></div>
+      <button class="xbtn" onclick="closeD()">✕</button>
+    </div>
+    <div id="dbody"></div>
+    <div class="mfoot" id="dfoot"></div>
+  </div>
+</div>
+
+<!-- EDIT -->
+<div class="overlay" id="me" onclick="if(event.target===this)closeE()">
+  <div class="modal">
+    <div class="mhdr">
+      <div><div class="mtitle">✏️ Editar registro</div><div class="mnum" id="enum-d"></div></div>
+      <button class="xbtn" onclick="closeE()">✕</button>
+    </div>
+    <div class="fg"><label>Nombre</label><input id="en" type="text"></div>
+    <div class="fg"><label>Teléfono</label><input id="ep" type="tel"></div>
+    <div class="fg"><label>Vendedor</label><input id="es" type="text"></div>
+    <div class="fg"><label>Estado de pago</label>
+      <select id="epd"><option value="0">⏳ Sin pagar</option><option value="claim">🕐 Pago reportado (pendiente)</option><option value="1">✅ Pagado confirmado</option></select>
+    </div>
+    <div class="fg">
+      <label>💳 Método de pago</label>
+      <div class="pay-method-row">
+        <button type="button" class="pay-method-btn" id="epm-none"     onclick="setPayMethod('none','e')"    >— Sin especificar</button>
+        <button type="button" class="pay-method-btn" id="epm-cash"     onclick="setPayMethod('cash','e')"    >💵 Efectivo</button>
+        <button type="button" class="pay-method-btn" id="epm-transfer" onclick="setPayMethod('transfer','e')">🏦 Transferencia</button>
+      </div>
+      <input type="hidden" id="epaymethod" value="">
+    </div>
+    <div id="emsg" class="msg"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeE()">Cancelar</button>
+      <button class="btn btn-gold"  onclick="saveEdit()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER FROM GRID -->
+<div class="overlay" id="mr" onclick="if(event.target===this)closeR()">
+  <div class="modal">
+    <div class="mhdr">
+      <div><div class="mtitle">🎟 Registrar número</div><div class="mnum" id="rnum-d"></div></div>
+      <button class="xbtn" onclick="closeR()">✕</button>
+    </div>
+    <div class="fg"><label>Nombre del comprador</label><input id="rn" type="text" placeholder="Nombre completo"></div>
+    <div class="fg"><label>Teléfono</label><input id="rp" type="tel" placeholder="+1 555 000-0000"></div>
+    <!-- Seller checkbox / admin select -->
+    <div class="fg" id="rpaid-seller-wrap">
+      <label>Pago</label>
+      <div class="pay-claim-wrap" id="rpay-wrap" onclick="toggleRClaim()">
+        <div class="pay-checkbox"><span class="pay-checkbox-tick">✓</span></div>
+        <div class="pay-claim-text">
+          <strong>El comprador ya pagó</strong>
+          <span>Se enviará al admin para confirmación</span>
+        </div>
+      </div>
+      <input type="hidden" id="rpd-claim" value="0">
+    </div>
+    <div class="fg" id="rpaid-admin-wrap" style="display:none">
+      <label>Estado de pago (admin)</label>
+      <select id="rpd">
+        <option value="0">⏳ Sin pagar</option>
+        <option value="claim">🕐 Pago reportado</option>
+        <option value="1">✅ Pagado confirmado (100€)</option>
+      </select>
+    </div>
+
+    <!-- ABONO al registrar (modal grilla) -->
+    <div class="fg" id="r-abono-wrap">
+      <label>💰 Abono inicial <span style="color:var(--text3);font-weight:400;font-size:.75rem">(opcional — máx. 100€)</span></label>
+      <input id="rabono" type="text" inputmode="numeric" placeholder="0"
+        style="font-family:'Space Mono',monospace"
+        oninput="this.value=this.value.replace(/\D/g,'');updateAbonoHint('rabono','rabono-hint')">
+      <div id="rabono-hint" style="font-size:.73rem;color:var(--text3);margin-top:.2rem"></div>
+    </div>
+
+    <!-- MÉTODO DE PAGO (modal grilla) -->
+    <div class="fg">
+      <label>💳 Método de pago</label>
+      <div class="pay-method-row">
+        <button type="button" class="pay-method-btn" id="rpm-none"     onclick="setPayMethod('none','r')"    >— Sin especificar</button>
+        <button type="button" class="pay-method-btn" id="rpm-cash"     onclick="setPayMethod('cash','r')"    >💵 Efectivo</button>
+        <button type="button" class="pay-method-btn" id="rpm-transfer" onclick="setPayMethod('transfer','r')">🏦 Transferencia</button>
+      </div>
+      <input type="hidden" id="rpaymethod" value="">
+    </div>
+    <div id="rmsg" class="msg"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeR()">Cancelar</button>
+      <button class="btn btn-gold"  onclick="regModal()">✓ Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="print-area"></div>
+
+<!-- IMPORT CSV MODAL -->
+<div class="overlay" id="mi" onclick="if(event.target===this)closeImport()">
+  <div class="modal" style="max-width:500px">
+    <div class="mhdr">
+      <div>
+        <div class="mtitle">⬆ Importar desde CSV</div>
+        <div style="color:var(--text3);font-size:.8rem;margin-top:.25rem">
+          Formato: columnas Número, Nombre, Teléfono, Vendedor, Pagado
+        </div>
+      </div>
+      <button class="xbtn" onclick="closeImport()">✕</button>
+    </div>
+
+    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('import-file').click()">
+      <input type="file" id="import-file" accept=".csv,.txt" onchange="handleImportFile(event)">
+      <div class="drop-icon">📂</div>
+      <div class="drop-label">
+        <strong>Haz clic aquí</strong> o arrastra tu archivo CSV<br>
+        <span style="font-size:.76rem;color:var(--text3)">Compatible con Excel y Google Sheets (.csv)</span>
+      </div>
+    </div>
+
+    <div id="import-preview" class="import-preview"></div>
+    <div id="import-msg" class="msg"></div>
+
+    <div style="margin-top:.5rem;padding:.6rem .85rem;background:var(--surface2);border-radius:8px;font-size:.76rem;color:var(--text3);line-height:1.7">
+      <strong style="color:var(--text2)">💡 Formato esperado del CSV:</strong><br>
+      Primera fila = encabezados (Número, Nombre, Teléfono, Vendedor, Pagado)<br>
+      Pagado = <em>Sí / No / 1 / 0</em> &nbsp;·&nbsp; Números de 4 dígitos (0000–9999)
+    </div>
+
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeImport()">Cancelar</button>
+      <button class="btn btn-gold" id="import-confirm" onclick="confirmImport()" style="display:none">
+        ⬆ Importar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE SELLERS MODAL (admin) -->
+<div class="overlay" id="ms" onclick="if(event.target===this)closeSellers()">
+  <div class="modal" style="max-width:480px">
+    <div class="mhdr">
+      <div>
+        <div class="mtitle">👥 Gestionar Vendedores</div>
+        <div style="color:var(--text3);font-size:.78rem;margin-top:.2rem">
+          Cada vendedor tiene su propio usuario y contraseña
+        </div>
+      </div>
+      <button class="xbtn" onclick="closeSellers()">✕</button>
+    </div>
+
+    <!-- Lista actual -->
+    <div style="border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;max-height:220px;overflow-y:auto">
+      <div id="sellers-list">
+        <div style="padding:1rem;text-align:center;color:var(--text3);font-size:.85rem">Sin vendedores</div>
+      </div>
+    </div>
+
+    <!-- Agregar / Editar -->
+    <div style="background:var(--surface2);border-radius:10px;padding:1rem;border:1px solid var(--border)">
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.75rem" id="seller-form-title">➕ Agregar vendedor</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <div class="fg" style="margin:0">
+          <label>Nombre completo</label>
+          <input id="ns-name" type="text" placeholder="Ej: Ana López">
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Teléfono</label>
+          <input id="ns-phone" type="tel" placeholder="Ej: +34 600 000 000" autocomplete="off">
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Usuario (para login)</label>
+          <input id="ns-user" type="text" placeholder="Ej: ana.lopez" autocomplete="off">
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Contraseña</label>
+          <input id="ns-pass" type="text" placeholder="Ej: rifa123" autocomplete="off">
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:.4rem">
+          <button class="btn btn-gold btn-full" onclick="saveSeller()">Guardar</button>
+          <button class="btn btn-ghost btn-sm" id="cancel-edit-btn" onclick="cancelEditSeller()" style="display:none" title="Cancelar">✕</button>
+        </div>
+      </div>
+    </div>
+    <div id="sellers-msg" class="msg" style="margin-top:.5rem"></div>
+
+    <div style="margin-top:.75rem;padding:.55rem .85rem;background:var(--surface2);border-radius:8px;font-size:.74rem;color:var(--text3);line-height:1.7">
+      💡 El vendedor entra con su <b style="color:var(--text2)">usuario</b> y <b style="color:var(--text2)">contraseña</b> en la pestaña Vendedor.<br>
+      Si lo eliminas, sus ventas <strong style="color:var(--text2)">no se borran</strong>.
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeSellers()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="tstack" id="tstack"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  ▼▼▼  PEGA AQUÍ LA URL DE TU WEB APP DE GOOGLE  ▼▼▼
+// ════════════════════════════════════════════════════════
+const API = 'https://script.google.com/macros/s/AKfycbzgiFLwF48Z5FNSksabfu9r_voilFYMkdxMK8GfngSD2U4RnHIoaoqPx5RemO_ra7Hf/exec';
+// ════════════════════════════════════════════════════════
+
+// ── PRECIO DEL BILLETE ────────────────────────────────────
+let TICKET_PRICE = 100;
+const CURRENCY   = '€';
+// ─────────────────────────────────────────────────────────
+// Cada vendedor tiene: nombre, usuario y contraseña propios.
+// El admin puede gestionar esta lista desde dentro de la app.
+let SELLERS = [
+  { name:'Ana López',    user:'ana.lopez',    pass:'rifa001' },
+  { name:'Pedro Ruiz',   user:'pedro.ruiz',   pass:'rifa002' },
+  { name:'Luis Torres',  user:'luis.torres',  pass:'rifa003' },
+];
+// ─────────────────────────────────────────────────────────
+
+const pad = n => String(n).padStart(4,'0');
+let DATA={}, session=null, gFilter='all', tFilter='all', gPage=0, curView='grid';
+let editNum=null, regNum=null;
+const PG=400;
+
+// ── UTILS ─────────────────────────────────────────────────
+function toast(msg, type=''){
+  const el=document.createElement('div');
+  el.className='toast '+type; el.textContent=msg;
+  document.getElementById('tstack').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+function showMsg(id,type,txt){
+  const el=document.getElementById(id);
+  el.className='msg '+type; el.textContent=txt;
+  setTimeout(()=>{el.className='msg';el.textContent='';},5000);
+}
+function setDot(state){
+  const d=document.getElementById('sdot');
+  if(!d)return;
+  d.className='sdot'+(state==='off'?' off':state==='loading'?' loading':'');
+  d.title=state==='off'?'Sin conexión':state==='loading'?'Cargando…':'Conectado';
+}
+const fmt = n => Number(n||0).toLocaleString('es-ES', {style:'currency', currency:'EUR', minimumFractionDigits:0});
+
+function updateAbonoHint(inputId, hintId){
+  const val  = parseInt(document.getElementById(inputId)?.value||'0')||0;
+  const hint = document.getElementById(hintId);
+  if(!hint) return;
+  if(val <= 0){ hint.textContent=''; return; }
+
+  // Si estamos en el panel de detalle del vendedor, el máximo es el saldo real
+  let maxAbono = TICKET_PRICE;
+  if(inputId === 'sd-abono-inp' && sdNum && DATA[sdNum]){
+    const e = DATA[sdNum];
+    maxAbono = Math.max(0, TICKET_PRICE - (e.abonos||0) - (e.abonosPending||0));
+  }
+
+  if(val > maxAbono){
+    hint.textContent = `⚠️ No puede superar el saldo disponible (${fmt(maxAbono)})`;
+    hint.style.color = 'var(--red)'; return;
+  }
+  const debe = maxAbono - val;
+  hint.style.color = debe === 0 ? 'var(--green)' : 'var(--text3)';
+  hint.textContent = debe === 0 ? '✅ Pago completo' : `Este abono: ${fmt(val)} — Quedará pendiente: ${fmt(debe)}`;
+}
+
+// ════════════════════════════════════════════════════════
+//  MODO DEMO — base de datos en memoria (sin servidor)
+//  Se activa automáticamente cuando API contiene TU_DEPLOYMENT_ID
+// ════════════════════════════════════════════════════════
+const DEMO_MODE  = API.includes('TU_DEPLOYMENT_ID');
+const DEMO_ADMIN = 'admin123';
+
+// Datos de muestra para que la demo se vea poblada
+let DEMO_DB = {
+  '0042': { name:'María García',    phone:'+34 611-0101', seller:'Ana López',   paid:true,  paymentClaim:false, abonos:100, abonosPending:0,  paymethod:'transfer', date:'24/2/2026, 10:15', ts:1 },
+  '0117': { name:'Carlos Méndez',   phone:'+34 622-0202', seller:'Pedro Ruiz',  paid:false, paymentClaim:true,  abonos:0,   abonosPending:0,  paymethod:'cash',     date:'24/2/2026, 10:32', ts:2 },
+  '0256': { name:'Laura Herrera',   phone:'+34 633-0303', seller:'Ana López',   paid:true,  paymentClaim:false, abonos:100, abonosPending:0,  paymethod:'transfer', date:'24/2/2026, 11:00', ts:3 },
+  '0389': { name:'Jorge Ramírez',   phone:'+34 644-0404', seller:'Pedro Ruiz',  paid:false, paymentClaim:false, abonos:50,  abonosPending:0,  paymethod:'cash',     date:'24/2/2026, 11:18', ts:4 },
+  '0501': { name:'Sofía Castillo',  phone:'+34 655-0505', seller:'Ana López',   paid:false, paymentClaim:false, abonos:30,  abonosPending:20, paymethod:'transfer', date:'24/2/2026, 11:45', ts:5 },
+  '0777': { name:'Diego Morales',   phone:'+34 666-0606', seller:'Luis Torres', paid:true,  paymentClaim:false, abonos:100, abonosPending:0,  paymethod:'cash',     date:'24/2/2026, 12:10', ts:6 },
+  '1234': { name:'Elena Vásquez',   phone:'+34 677-0707', seller:'Luis Torres', paid:false, paymentClaim:false, abonos:0,   abonosPending:40, paymethod:'',         date:'24/2/2026, 12:30', ts:7 },
+  '5000': { name:'Andrés Jiménez',  phone:'+34 688-0808', seller:'Ana López',   paid:true,  paymentClaim:false, abonos:100, abonosPending:0,  paymethod:'transfer', date:'24/2/2026, 13:00', ts:8 },
+  '7321': { name:'Isabel Paredes',  phone:'+34 699-0909', seller:'Pedro Ruiz',  paid:false, paymentClaim:false, abonos:20,  abonosPending:0,  paymethod:'cash',     date:'24/2/2026, 13:22', ts:9 },
+  '9999': { name:'Roberto Salinas', phone:'+34 600-1010', seller:'Luis Torres', paid:false, paymentClaim:true,  abonos:0,   abonosPending:50, paymethod:'',         date:'24/2/2026, 14:05', ts:10},
+};
+
+function demoPost(body) {
+  const { action, token, user, num, entry } = body;
+  const isAdmin = token === DEMO_ADMIN;
+
+  // Buscar vendedor: primero por user+pass, luego solo por pass (token guardado en sesión)
+  let sellerObj = null;
+  if (!isAdmin) {
+    if (user) {
+      sellerObj = SELLERS.find(s => s.user === user && s.pass === token);
+    }
+    if (!sellerObj) {
+      sellerObj = SELLERS.find(s => s.pass === token);
+    }
+  }
+  const isSeller = isAdmin || !!sellerObj;
+
+  if (action === 'ping_auth' || action === 'ping') {
+    if (isAdmin) return { ok:true, role:'admin', name:'Administrador' };
+    if (sellerObj) return { ok:true, role:'seller', name: sellerObj.name };
+    if (!token && !user) return { ok:true, role:'guest' };
+    return { ok:false, error:'Usuario o contraseña incorrectos' };
+  }
+
+  if (!isSeller) return { ok:false, error:'No autorizado' };
+  const padNum = num ? String(num).padStart(4,'0') : null;
+
+  if (action === 'register') {
+    if (DEMO_DB[padNum]) return { ok:false, error:`#${padNum} ya está vendido a ${DEMO_DB[padNum].name}` };
+    DEMO_DB[padNum] = { ...entry, ts: Date.now() };
+    return { ok:true };
+  }
+  if (action === 'edit') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador puede editar' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    DEMO_DB[padNum] = { ...DEMO_DB[padNum], ...entry };
+    return { ok:true };
+  }
+  if (action === 'reportPay') {
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    if (DEMO_DB[padNum].paid) return { ok:false, error:'Este número ya está pagado' };
+    DEMO_DB[padNum].paymentClaim = true;
+    return { ok:true };
+  }
+  if (action === 'confirmPay') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    DEMO_DB[padNum].paid = true; DEMO_DB[padNum].paymentClaim = false;
+    return { ok:true };
+  }
+  if (action === 'rejectPay') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    DEMO_DB[padNum].paid = false; DEMO_DB[padNum].paymentClaim = false;
+    return { ok:true };
+  }
+  if (action === 'togglePaid') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    const newPaid = !DEMO_DB[padNum].paid;
+    DEMO_DB[padNum].paid = newPaid; DEMO_DB[padNum].paymentClaim = false;
+    return { ok:true, paid:newPaid };
+  }
+  if (action === 'delete') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    delete DEMO_DB[padNum];
+    return { ok:true };
+  }
+  if (action === 'reportAbono') {
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    const val = Number(body.valor);
+    if (!val || val <= 0) return { ok:false, error:'Valor inválido' };
+    DEMO_DB[padNum].abonosPending = (DEMO_DB[padNum].abonosPending||0) + val;
+    return { ok:true };
+  }
+  if (action === 'confirmAbono') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    const val = DEMO_DB[padNum].abonosPending || 0;
+    DEMO_DB[padNum].abonos = (DEMO_DB[padNum].abonos||0) + val;
+    DEMO_DB[padNum].abonosPending = 0;
+    // Si abonos >= precio marcar como pagado
+    if (DEMO_DB[padNum].abonos >= TICKET_PRICE) {
+      DEMO_DB[padNum].paid = true; DEMO_DB[padNum].paymentClaim = false;
+    }
+    return { ok:true };
+  }
+  if (action === 'rejectAbono') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    DEMO_DB[padNum].abonosPending = 0;
+    return { ok:true };
+  }
+  if (action === 'setAbono') {
+    if (!isAdmin) return { ok:false, error:'Solo el administrador' };
+    if (!DEMO_DB[padNum]) return { ok:false, error:'No encontrado' };
+    const val = Number(body.valor);
+    if (isNaN(val) || val < 0) return { ok:false, error:'Valor inválido' };
+    DEMO_DB[padNum].abonos = val;
+    DEMO_DB[padNum].abonosPending = 0;
+    if (val >= TICKET_PRICE) { DEMO_DB[padNum].paid=true; DEMO_DB[padNum].paymentClaim=false; }
+    else DEMO_DB[padNum].paid = false;
+    return { ok:true };
+  }
+  return { ok:false, error:'Acción desconocida' };
+}
+
+// ── API CALLS (con interceptor demo) ──────────────────────
+async function apiGet(params=''){
+  if (DEMO_MODE) {
+    if (params.includes('ping')) return { ok:true };
+    return { ok:true, data: JSON.parse(JSON.stringify(DEMO_DB)) };
+  }
+  const res = await fetch(`${API}?${params}`, {method:'GET', redirect:'follow'});
+  const text = await res.text();
+  if (!text || text.trim() === '') return {ok:false, error:'Respuesta vacía del servidor'};
+  try { return JSON.parse(text); } catch(e) { return {ok:false, error:'Respuesta inválida: '+text.slice(0,100)}; }
+}
+async function apiPost(body){
+  // Siempre incluir el usuario de sesión para autenticación individual
+  const enriched = session ? { ...body, user: session.user || null } : body;
+  if (DEMO_MODE) {
+    await new Promise(r=>setTimeout(r,120));
+    return demoPost(enriched);
+  }
+  // Google Apps Script requiere URL con datos en GET para operaciones de escritura
+  // ya que POST con CORS no está soportado desde dominios externos
+  const params = encodeURIComponent(JSON.stringify(enriched));
+  const res = await fetch(API + '?payload=' + params, {method:'GET', redirect:'follow'});
+  const text = await res.text();
+  if (!text || text.trim() === '') return {ok:false, error:'Respuesta vacía del servidor'};
+  try { return JSON.parse(text); } catch(e) { return {ok:false, error:'Respuesta inválida: '+text.slice(0,100)}; }
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+let loginMode='seller';
+function setMode(m){
+  loginMode=m;
+  document.getElementById('pane-s').style.display=m==='seller'?'':'none';
+  document.getElementById('pane-a').style.display=m==='admin'?'':'none';
+  document.querySelectorAll('.rtab').forEach((t,i)=>
+    t.classList.toggle('on',(i===0&&m==='seller')||(i===1&&m==='admin')));
+  document.getElementById('lmsg').className='msg';
+}
+
+async function doLogin(){
+  let user, token;
+  if(loginMode==='seller'){
+    user  = document.getElementById('inp-sn').value.trim();
+    token = document.getElementById('inp-sc').value;
+    if(!user)  { showMsg('lmsg','err','Ingresa tu usuario'); return; }
+    if(!token) { showMsg('lmsg','err','Ingresa tu contraseña'); return; }
+  } else {
+    token = document.getElementById('inp-ap').value;
+    if(!token) { showMsg('lmsg','err','Ingresa la contraseña'); return; }
+  }
+
+  showMsg('lmsg','ok','Verificando…');
+  try {
+    const r = await apiPost({ action:'ping_auth', token, user: user||null, mode:loginMode });
+    if(!r.ok){ showMsg('lmsg','err', r.error||'Usuario o contraseña incorrectos'); return; }
+    session = {
+      role:  r.role,
+      name:  r.name || (loginMode==='admin' ? 'Administrador' : user),
+      token: token,
+      user:  user || null
+    };
+    document.getElementById('lmsg').className='msg';
+    await loadData();
+    launchApp();
+  } catch(e){
+    showMsg('lmsg','err','No se puede conectar. Verifica la URL del script.');
+  }
+}
+
+function launchApp(){
+  document.getElementById('login-screen').style.display='none';
+
+  if(session.role === 'admin'){
+    // ── ADMIN UI ─────────────────────────────────────
+    document.getElementById('app').style.display='block';
+    document.getElementById('seller-app').style.display='none';
+    document.getElementById('hname').textContent = session.name;
+    const b=document.getElementById('hbadge');
+    b.textContent='Admin'; b.className='badge b-admin';
+    document.getElementById('fseller').value=session.name;
+    document.getElementById('fseller').removeAttribute('readonly');
+    document.getElementById('th-adm').style.display='';
+    document.getElementById('form-pay-seller').style.display='none';
+    document.getElementById('form-pay-admin').style.display='';
+    document.getElementById('rpaid-seller-wrap').style.display='none';
+    document.getElementById('rpaid-admin-wrap').style.display='';
+    document.getElementById('stat-pending-wrap').style.display='';
+    document.getElementById('btn-sellers').style.display='';
+    document.getElementById('tab-sellers').style.display='';
+    document.getElementById('btn-changelog').style.display='';
+    document.getElementById('finance-panel-wrap').style.display='';
+  } else {
+    // ── SELLER SIMPLIFIED UI ─────────────────────────
+    document.getElementById('app').style.display='none';
+    document.getElementById('seller-app').style.display='flex';
+    document.getElementById('hname-s').textContent = session.name;
+  }
+
+  setInterval(()=>loadData(true), 45000);
+  isOnline = navigator.onLine;
+  updateOfflineBanner();
+  if(isOnline && queueSize() > 0) flushQueue();
+  setTimeout(checkAutoBackup, 4000);
+}
+
+function logout(){
+  session=null; DATA={};
+  document.getElementById('app').style.display='none';
+  document.getElementById('seller-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('inp-sn').value='';
+  document.getElementById('inp-sc').value='';
+  document.getElementById('inp-ap').value='';
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────
+async function loadData(silent=false){
+  if(!silent) setDot('loading');
+  try {
+    const r = await apiGet('action=getData');
+    if(r.ok){ DATA=r.data||{}; }
+    setDot('on');
+    if(session) renderCurrent();
+    updateStats();
+    setupDrop();
+  } catch(e){
+    setDot('off');
+    if(!silent) toast('Sin conexión','err');
+  }
+}
+
+// ── STATS ──────────────────────────────────────────────────
+// ── SELLER SIMPLIFIED UI ──────────────────────────────────
+
+function checkSellerNum(){
+  const raw = document.getElementById('sn-num').value;
+  const num = raw.padStart(4,'0');
+  const hint = document.getElementById('sn-hint');
+  const form = document.getElementById('sn-form');
+
+  if(raw.length === 0){
+    hint.className='seller-num-hint snh-empty';
+    hint.textContent='Escribe el número a comprobar';
+    form.style.display='none'; return;
+  }
+  if(raw.length < 4){
+    hint.className='seller-num-hint snh-empty';
+    hint.textContent='Escribe los 4 dígitos...';
+    form.style.display='none'; return;
+  }
+  const e = DATA[num];
+  if(e){
+    const estado = e.paid ? '✅ Pagado' : e.paymentClaim ? '🕐 Pago reportado'
+      : (e.abonos||0)>0 ? `💰 Abonado ${fmt(e.abonos||0)}` : '⏳ Sin pagar';
+    hint.className='seller-num-hint snh-taken';
+    hint.innerHTML=`❌ #${num} ya está vendido<br>
+      <span style="font-weight:400;font-size:.82rem">${e.name} · ${estado}</span>`;
+    form.style.display='none';
+  } else {
+    hint.className='seller-num-hint snh-free';
+    hint.innerHTML=`✅ #${num} está disponible — puedes registrarlo`;
+    document.getElementById('sn-form-num').textContent='#'+num;
+    form.style.display='block';
+  }
+}
+function focusForm(){
+  const raw=document.getElementById('sn-num').value;
+  if(raw.length===4 && !DATA[raw.padStart(4,'0')])
+    document.getElementById('sf-name').focus();
+}
+function resetSellerForm(clearNum=true){
+  if(clearNum){ document.getElementById('sn-num').value=''; checkSellerNum(); }
+  document.getElementById('sf-name').value='';
+  document.getElementById('sf-phone').value='';
+  document.getElementById('sf-abono').value='';
+  document.getElementById('sf-abono-hint').textContent='';
+  document.getElementById('sf-msg').className='msg';
+  const w=document.getElementById('sf-pay-wrap');
+  const i=document.getElementById('sf-paid-claim');
+  if(w) w.classList.remove('checked');
+  if(i) i.value='0';
+  resetPayMethod('sf');
+}
+function toggleSFClaim(){
+  const wrap=document.getElementById('sf-pay-wrap');
+  const inp =document.getElementById('sf-paid-claim');
+  inp.value = wrap.classList.toggle('checked') ? '1' : '0';
+}
+async function submitSellerForm(){
+  const raw  = document.getElementById('sn-num').value;
+  const num  = raw.padStart(4,'0');
+  const name = document.getElementById('sf-name').value.trim();
+  const phone= document.getElementById('sf-phone').value.trim();
+  const abonoRaw    = parseInt(document.getElementById('sf-abono').value||'0')||0;
+  const paymethod   = document.getElementById('sfpaymethod')?.value||'';
+  const paymentClaim= document.getElementById('sf-paid-claim').value==='1';
+  if(!name) { showMsg('sf-msg','err','Escribe el nombre del comprador'); return; }
+  if(!phone){ showMsg('sf-msg','err','Escribe el teléfono'); return; }
+  if(abonoRaw > TICKET_PRICE){ showMsg('sf-msg','err',`El abono no puede superar ${fmt(TICKET_PRICE)}`); return; }
+  if(DATA[num]){ showMsg('sf-msg','err',`#${num} ya fue vendido`); return; }
+  const btn=document.getElementById('sf-submit');
+  btn.disabled=true; btn.textContent='Guardando…';
+  const r=await apiPost({
+    action:'register', token:getSellerToken(), num,
+    entry:{ name, phone, seller:session.name,
+      paid:false, paymentClaim,
+      abonos:0, abonosPending: abonoRaw,
+      paymethod, date:new Date().toLocaleString('es') }
+  });
+  btn.disabled=false; btn.textContent='✓ Registrar';
+  if(r.ok){
+    logChange('register', num, {name, seller:session.name});
+    toast(`#${num} registrado ✓`,'ok');
+    resetSellerForm(true);
+    await loadData(true);
+  } else showMsg('sf-msg','err', r.error||'Error al guardar');
+}
+function renderMySales(){
+  const el=document.getElementById('my-sales-list');
+  if(!el) return;
+  const todas=Object.entries(DATA)
+    .filter(([,e])=>e.seller===session.name)
+    .sort(([a],[b])=>b.localeCompare(a))
+    .slice(0,20);
+  if(!todas.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:.82rem;text-align:center;padding:1rem">Aún no hay ventas registradas</div>';
+    return;
+  }
+  el.innerHTML=todas.map(([num,e])=>{
+    const abonado = e.abonos||0;
+    const pending = e.abonosPending||0;
+    const totalAbono = abonado + pending;
+
+    const badgeCls = e.paid
+      ? 'background:rgba(80,200,140,.15);color:var(--green)'
+      : e.paymentClaim
+        ? 'background:rgba(240,184,64,.15);color:var(--gold)'
+        : totalAbono > 0
+          ? 'background:rgba(80,200,140,.1);color:#40c870'
+          : 'background:rgba(100,150,240,.1);color:var(--blue)';
+
+    let badgeTxt;
+    if(e.paid){
+      badgeTxt = '✅ Pagado';
+    } else if(e.paymentClaim){
+      badgeTxt = '🕐 Pago reportado';
+    } else if(totalAbono > 0){
+      // Mostrar total con indicador provisional si hay pending
+      const partes = [];
+      if(abonado > 0) partes.push(fmt(abonado));
+      if(pending > 0) partes.push(`+${fmt(pending)}*`);
+      badgeTxt = `💰 ${partes.join(' ')}`;
+    } else {
+      badgeTxt = '⏳ Sin pagar';
+    }
+
+    const metodo = e.paymethod==='cash'?'💵 ':e.paymethod==='transfer'?'🏦 ':'';
+    return `<div class="my-sale-row" onclick="openSD('${num}')">
+      <span class="my-sale-num">#${num}</span>
+      <span class="my-sale-name">${metodo}${e.name}</span>
+      <span class="my-sale-badge" style="${badgeCls}">${badgeTxt}</span>
+    </div>`;
+  }).join('') + `<div style="font-size:.7rem;color:var(--text3);text-align:right;margin-top:.35rem;padding-right:.25rem">* pendiente de confirmar por admin</div>`;
+}
+
+// ── SELLER DETAIL PANEL ───────────────────────────────────
+let sdNum = null;
+
+function openSD(num){
+  sdNum = num;
+  const e = DATA[num];
+  if(!e) return;
+
+  document.getElementById('sd-num').textContent  = '#' + num;
+  document.getElementById('sd-name').textContent = e.name;
+  document.getElementById('sd-phone').textContent= e.phone;
+
+  // Estado pago
+  const estadoTxt = e.paid ? '✅ Confirmado'
+    : e.paymentClaim ? '🕐 Reportado — pendiente de confirmación'
+    : '⏳ Sin pagar';
+  document.getElementById('sd-estado').textContent = estadoTxt;
+
+  // Abono
+  const abonado = e.abonos || 0;
+  const pending = e.abonosPending || 0;
+  const saldo   = Math.max(0, TICKET_PRICE - abonado - pending);
+
+  // Línea "Abonado" — muestra confirmado + provisional separados
+  const sdAbonadoEl = document.getElementById('sd-abonado');
+  if(abonado === 0 && pending === 0){
+    sdAbonadoEl.textContent = '—';
+    sdAbonadoEl.style.color = '';
+  } else {
+    let txt = '';
+    if(abonado > 0) txt += fmt(abonado) + ' confirmado';
+    if(pending > 0) txt += (abonado > 0 ? ' · ' : '') + fmt(pending) + ' provisional*';
+    sdAbonadoEl.innerHTML = txt;
+    sdAbonadoEl.style.color = 'var(--green)';
+  }
+  document.getElementById('sd-saldo').textContent = e.paid ? '—' : fmt(saldo);
+  document.getElementById('sd-metodo').textContent =
+    e.paymethod==='cash' ? '💵 Efectivo'
+    : e.paymethod==='transfer' ? '🏦 Transferencia' : '— Sin especificar';
+
+  // Aviso abono pendiente
+  document.getElementById('sd-pending-notice').style.display = pending > 0 ? '' : 'none';
+
+  // Sección pago — ocultar si ya pagó o ya reportó
+  const paySection = document.getElementById('sd-pay-section');
+  paySection.style.display = (e.paid || e.paymentClaim) ? 'none' : '';
+
+  // Resetear checkbox pago
+  const w = document.getElementById('sd-pay-wrap');
+  const i = document.getElementById('sd-paid-claim');
+  if(w) w.classList.remove('checked');
+  if(i) i.value = '0';
+  document.getElementById('sd-pay-msg').className = 'msg';
+
+  // Sección abono — ocultar solo si ya pagó completo o no hay saldo
+  const abonoSection = document.getElementById('sd-abono-section');
+  abonoSection.style.display = (e.paid || saldo <= 0) ? 'none' : '';
+  document.getElementById('sd-abono-inp').value = '';
+  document.getElementById('sd-abono-hint').textContent = '';
+  document.getElementById('sd-abono-msg').className = 'msg';
+
+  // Mostrar panel, scroll hasta él
+  const panel = document.getElementById('sd-panel');
+  panel.style.display = '';
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+function closeSD(){
+  document.getElementById('sd-panel').style.display = 'none';
+  sdNum = null;
+}
+
+function toggleSDClaim(){
+  const wrap = document.getElementById('sd-pay-wrap');
+  const inp  = document.getElementById('sd-paid-claim');
+  inp.value  = wrap.classList.toggle('checked') ? '1' : '0';
+}
+
+async function submitSDPay(){
+  if(!sdNum) return;
+  const paymentClaim = document.getElementById('sd-paid-claim').value === '1';
+  if(!paymentClaim){
+    showMsg('sd-pay-msg','err','Marca la casilla para confirmar que el comprador pagó');
+    return;
+  }
+  const btn = document.getElementById('sd-pay-btn');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  const r = await apiPost({action:'reportPay', token:getSellerToken(), num:sdNum});
+  btn.disabled = false; btn.textContent = 'Enviar al admin para confirmar';
+  if(r.ok){
+    logChange('reportPay', sdNum, DATA[sdNum], 'pago reportado por vendedor');
+    toast(`#${sdNum} — pago reportado al admin ✓`,'ok');
+    await loadData(true);
+    openSD(sdNum); // refrescar panel
+  } else showMsg('sd-pay-msg','err', r.error||'Error');
+}
+
+async function submitSDAbono(){
+  if(!sdNum) return;
+  const inp = document.getElementById('sd-abono-inp');
+  const val = parseInt(inp.value||'0');
+  if(!val||val<=0){ showMsg('sd-abono-msg','err','Escribe un valor válido'); return; }
+  const e = DATA[sdNum];
+  const yaAbonado = (e.abonos||0) + (e.abonosPending||0);
+  const saldo = Math.max(0, TICKET_PRICE - yaAbonado);
+  if(val > saldo){ showMsg('sd-abono-msg','err',`No puede superar el saldo disponible (${fmt(saldo)})`); return; }
+  const r = await apiPost({action:'reportAbono', token:getSellerToken(), num:sdNum, valor:val});
+  if(r.ok){
+    logChange('reportAbono', sdNum, DATA[sdNum], fmt(val));
+    toast(`Abono de ${fmt(val)} reportado al admin ✓`,'ok');
+    inp.value='';
+    await loadData(true);
+    openSD(sdNum);
+  } else showMsg('sd-abono-msg','err', r.error||'Error');
+}
+
+// ── NAV TO FILTER ────────────────────────────────────────
+function goToFilter(f){
+  // Switch to grid view
+  const gridTab = document.querySelector('.vtab[onclick*="grid"]');
+  setView('grid', gridTab);
+  // Apply filter
+  setGF(f, null);
+  // Highlight matching chip
+  document.querySelectorAll('#vg .chip').forEach(c=>{
+    c.classList.remove('on');
+    if(c.getAttribute('data-gf')===f) c.classList.add('on');
+  });
+  // Scroll content into view
+  document.getElementById('vg').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function updateStats(){
+  const vals=Object.values(DATA);
+  const sold    = vals.length;
+  const paid    = vals.filter(e=>e.paid).length;
+  const claimed = vals.filter(e=>e.paymentClaim && !e.paid).length;
+  const abonado = vals.filter(e=>!e.paid && (e.abonos||0)>0).length;
+  const unpaid  = sold - paid - claimed;
+  document.getElementById('ss').textContent=sold.toLocaleString();
+  document.getElementById('sf').textContent=(10000-sold).toLocaleString();
+  document.getElementById('sp').textContent=paid.toLocaleString();
+  document.getElementById('su').textContent=Math.max(0,unpaid).toLocaleString();
+  const sq=document.getElementById('sq');
+  if(sq) sq.textContent=claimed.toLocaleString();
+  const sab=document.getElementById('sab');
+  if(sab) sab.textContent=abonado.toLocaleString();
+  const sabWrap=document.getElementById('stat-abono-wrap');
+  if(sabWrap) sabWrap.style.display = abonado > 0 ? '' : 'none';
+  if(session&&session.role==='admin'){
+    // ── Pagos pendientes ──
+    const banner=document.getElementById('pending-banner');
+    const list  =document.getElementById('pending-list');
+    const cnt   =document.getElementById('pending-count');
+    const claimedEntries=Object.entries(DATA).filter(([,e])=>e.paymentClaim&&!e.paid);
+    cnt.textContent=claimedEntries.length;
+    if(claimedEntries.length>0){
+      banner.style.display='block';
+      list.innerHTML=claimedEntries.slice(0,8).map(([num,e])=>`
+        <div class="pending-item">
+          <span class="pending-num">#${num}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)">${e.name}</span>
+          <span style="color:var(--text3);font-size:.74rem;margin:0 .4rem">${e.seller}</span>
+          <button class="btn btn-green btn-sm" onclick="confirmPay('${num}')" style="flex-shrink:0">✓ OK</button>
+          <button class="btn btn-red btn-sm"   onclick="rejectPay('${num}')"  style="flex-shrink:0">✗</button>
+        </div>`).join('') +
+        (claimedEntries.length>8?`<div style="text-align:center;font-size:.75rem;color:var(--text3);padding:.4rem">...y ${claimedEntries.length-8} más</div>`:'');
+    } else {
+      banner.style.display='none';
+    }
+
+    // ── Abonos pendientes ──
+    const ab     = document.getElementById('abonos-banner');
+    const abList = document.getElementById('abonos-list');
+    const abCnt  = document.getElementById('abonos-count');
+    const abonoEntries = Object.entries(DATA).filter(([,e])=>(e.abonosPending||0)>0);
+    abCnt.textContent = abonoEntries.length;
+    if(abonoEntries.length>0){
+      ab.style.display='block';
+      abList.innerHTML = abonoEntries.slice(0,8).map(([num,e])=>`
+        <div class="abono-pending-item">
+          <span class="pending-num">#${num}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)">${e.name}</span>
+          <span style="color:var(--green);font-family:'Space Mono',monospace;font-size:.8rem;flex-shrink:0">
+            +${fmt(e.abonosPending)}
+          </span>
+          <button class="btn btn-green btn-sm" onclick="confirmAbono('${num}')" style="flex-shrink:0">✓</button>
+          <button class="btn btn-red btn-sm"   onclick="rejectAbono('${num}')"  style="flex-shrink:0">✗</button>
+        </div>`).join('') +
+        (abonoEntries.length>8?`<div style="text-align:center;font-size:.75rem;color:var(--text3);padding:.4rem">...y ${abonoEntries.length-8} más</div>`:'');
+    } else {
+      ab.style.display='none';
+    }
+
+    // ── Panel financiero ──
+    const totalConfirmed = vals.filter(e=>e.paid).length * TICKET_PRICE;
+    const totalAbonos    = vals.reduce((s,e)=>s+(e.paid?0:(e.abonos||0)),0);
+    const totalRecaudado = totalConfirmed + totalAbonos;
+    const totalPending   = vals.reduce((s,e)=>{
+      if(e.paid) return s;
+      const saldo = Math.max(0, TICKET_PRICE - (e.abonos||0));
+      return s + saldo;
+    }, 0);
+    const goal           = 10000 * TICKET_PRICE;
+    const pct            = goal > 0 ? Math.min(100, Math.round(totalRecaudado / goal * 100)) : 0;
+    const fmtE = n => n.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}) + ' €';
+    const setT = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setT('fp-confirmed', fmtE(totalConfirmed));
+    setT('fp-abonos',    fmtE(totalAbonos));
+    setT('fp-total',     fmtE(totalRecaudado));
+    setT('fp-pending',   fmtE(totalPending));
+    setT('fp-goal',      fmtE(goal));
+    setT('fp-pct',       pct + '%');
+    const bar = document.getElementById('fp-bar');
+    if(bar) bar.style.width = pct + '%';
+  } else {
+    // Actualizar "mis ventas" para el vendedor
+    renderMySales();
+  }
+}
+
+// ── GRID ───────────────────────────────────────────────────
+function gridItems(){
+  const q=(document.getElementById('gs')||{value:''}).value.trim();
+  let nums=Array.from({length:10000},(_,i)=>pad(i));
+  if(gFilter==='sold')    nums=nums.filter(n=>DATA[n]);
+  if(gFilter==='free')    nums=nums.filter(n=>!DATA[n]);
+  if(gFilter==='paid')    nums=nums.filter(n=>DATA[n]&&DATA[n].paid);
+  if(gFilter==='claimed') nums=nums.filter(n=>DATA[n]&&DATA[n].paymentClaim&&!DATA[n].paid);
+  if(gFilter==='unpaid')  nums=nums.filter(n=>DATA[n]&&!DATA[n].paid&&!DATA[n].paymentClaim);
+  if(gFilter==='abonado') nums=nums.filter(n=>DATA[n]&&!DATA[n].paid&&(DATA[n].abonos||0)>0);
+  if(q) nums=nums.filter(n=>n.startsWith(q));
+  return nums;
+}
+
+function renderGrid(){
+  const items=gridItems(), total=items.length;
+  const grid=document.getElementById('ngrid');
+  grid.innerHTML='';
+  items.forEach(num=>{
+    const e=DATA[num];
+    let cls,lbl;
+    if(!e)                          { cls='nc free';    lbl='libre'; }
+    else if(e.paid)                 { cls='nc paid';    lbl='pagado'; }
+    else if(e.paymentClaim)         { cls='nc claimed'; lbl='reportado'; }
+    else if((e.abonos||0)>0)        { cls='nc abonado'; lbl='abonado'; }
+    else                            { cls='nc unpaid';  lbl='sin pagar'; }
+    const c=document.createElement('div');
+    c.className=cls;
+    c.innerHTML=`<span class="n">${num}</span><span class="s">${lbl}</span>${e?'<div class="pdot"></div>':''}`;
+    c.onclick=()=>e?openD(num):openR(num);
+    grid.appendChild(c);
+  });
+  document.getElementById('pgrid').innerHTML='';
+}
+
+function renderPg(id,pages,total){
+  const p=document.getElementById(id); p.innerHTML='';
+  if(pages<=1)return;
+  const prev=mkpg('←',()=>{gPage--;renderGrid();},gPage===0);
+  p.appendChild(prev);
+  let s=Math.max(0,gPage-3),e=Math.min(pages-1,s+6);
+  if(e-s<6) s=Math.max(0,e-6);
+  for(let i=s;i<=e;i++){const b=mkpg(i+1,()=>{gPage=i;renderGrid();},false,i===gPage);p.appendChild(b);}
+  const next=mkpg('→',()=>{gPage++;renderGrid();},gPage>=pages-1);
+  const inf=document.createElement('span'); inf.className='pgi';
+  inf.textContent=`${gPage*PG+1}–${Math.min((gPage+1)*PG,total)} / ${total.toLocaleString()}`;
+  p.appendChild(next); p.appendChild(inf);
+}
+function mkpg(l,fn,d,on=false){
+  const b=document.createElement('button');
+  b.className='pg'+(on?' on':''); b.textContent=l; b.disabled=d;
+  if(!d) b.onclick=fn; return b;
+}
+function setGF(f,btn){
+  gFilter=f; gPage=0;
+  document.querySelectorAll('#vg .chip').forEach(c=>c.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderGrid();
+}
+
+// ── TABLE ──────────────────────────────────────────────────
+function payBadge(e){
+  if(e.paid)            return `<span class="pill pp">✅ Confirmado</span>`;
+  if(e.paymentClaim)    return `<span class="pill pill-claim">🕐 Reportado</span>`;
+  return                       `<span class="pill pu">⏳ Sin pagar</span>`;
+}
+
+function renderTable(){
+  const q=document.getElementById('ts').value.toLowerCase();
+  let rows=Object.entries(DATA);
+  if(tFilter==='paid')    rows=rows.filter(([,e])=>e.paid);
+  if(tFilter==='claimed') rows=rows.filter(([,e])=>e.paymentClaim&&!e.paid);
+  if(tFilter==='unpaid')  rows=rows.filter(([,e])=>!e.paid&&!e.paymentClaim);
+  if(tFilter==='abonado') rows=rows.filter(([,e])=>!e.paid&&(e.abonos||0)>0);
+  if(q) rows=rows.filter(([num,e])=>
+    num.includes(q)||e.name.toLowerCase().includes(q)||
+    e.seller.toLowerCase().includes(q)||e.phone.includes(q));
+  rows.sort(([a],[b])=>a.localeCompare(b));
+  const tbody=document.getElementById('tbody'); tbody.innerHTML='';
+  if(!rows.length){
+    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Sin resultados</td></tr>`;
+  } else {
+    rows.forEach(([num,e])=>{
+      const abonado = e.abonos||0;
+      const pending = e.abonosPending||0;
+      const abonoCell = e.paid
+        ? `<span style="color:var(--green);font-size:.78rem">✓ Completo</span>`
+        : abonado > 0
+          ? `<span style="color:var(--green);font-family:'Space Mono',monospace;font-size:.78rem">${fmt(abonado)}</span>
+             ${pending>0?`<br><span style="color:#c09020;font-size:.7rem">+${fmt(pending)} pend.</span>`:''}`
+          : `<span style="color:var(--text3);font-size:.78rem">—</span>`;
+      const tr=document.createElement('tr');
+      if(e.paymentClaim&&!e.paid) tr.style.background='rgba(240,184,64,0.04)';
+      else if(abonado>0&&!e.paid) tr.style.background='rgba(80,200,140,0.04)';
+      tr.innerHTML=`<td><span class="mono">#${num}</span></td>
+        <td><strong>${e.name}</strong></td>
+        <td style="color:var(--text2)">${e.phone}</td>
+        <td><span class="pill ps">${e.seller}</span></td>
+        <td>${payBadge(e)}</td>
+        <td>${abonoCell}</td>
+        <td style="color:var(--text3);font-size:.78rem">${e.date||''}</td>
+        <td class="acell" id="ac-${num}" style="display:${session&&session.role==='admin'?'flex':'none'}"></td>`;
+      tbody.appendChild(tr);
+      if(session&&session.role==='admin'){
+        const ac=tr.querySelector(`#ac-${num}`);
+        const eb=document.createElement('button');
+        eb.className='btn btn-ghost btn-sm'; eb.textContent='✏️'; eb.onclick=()=>openE(num);
+        ac.appendChild(eb);
+        if(e.paymentClaim&&!e.paid){
+          const ok=document.createElement('button');
+          ok.className='btn btn-green btn-sm'; ok.textContent='✓ OK'; ok.title='Confirmar pago';
+          ok.onclick=()=>confirmPay(num);
+          const rej=document.createElement('button');
+          rej.className='btn btn-red btn-sm'; rej.textContent='✗'; rej.title='Rechazar pago';
+          rej.onclick=()=>rejectPay(num);
+          ac.appendChild(ok); ac.appendChild(rej);
+        } else {
+          const pb=document.createElement('button');
+          pb.className=e.paid?'btn btn-ghost btn-sm':'btn btn-green btn-sm';
+          pb.textContent=e.paid?'↩':'✓'; pb.title=e.paid?'Desmarcar':'Marcar pagado';
+          pb.onclick=()=>togglePaid(num);
+          ac.appendChild(pb);
+        }
+        const db=document.createElement('button');
+        db.className='btn btn-red btn-sm'; db.textContent='🗑'; db.onclick=()=>confirmDel(num);
+        ac.appendChild(db);
+      }
+    });
+  }
+  document.getElementById('tinfo').textContent=`${rows.length} registro${rows.length!==1?'s':''}`;
+}
+function setTF(f,btn){
+  tFilter=f;
+  document.querySelectorAll('#vt .chip').forEach(c=>{c.classList.remove('on','cgn-chip','cr-chip');});
+  btn.classList.add('on');
+  if(f==='paid')    btn.classList.add('cgn-chip');
+  if(f==='unpaid')  btn.classList.add('cr-chip');
+  renderTable();
+}
+
+// ── SUBMIT SALE ────────────────────────────────────────────
+function getPayState(){
+  // Admin uses select, seller uses checkbox
+  if(session.role==='admin'){
+    const v=document.getElementById('fpaid').value;
+    return { paid: v==='1', paymentClaim: v==='claim' };
+  } else {
+    const claimed=document.getElementById('fpaid-claim').value==='1';
+    return { paid: false, paymentClaim: claimed };
+  }
+}
+
+async function submitSale(){
+  const rawNum=document.getElementById('fn').value.trim();
+  const name  =document.getElementById('fname').value.trim();
+  const phone =document.getElementById('fphone').value.trim();
+  const seller=document.getElementById('fseller').value.trim();
+  const {paid,paymentClaim}=getPayState();
+  const num   =rawNum.padStart(4,'0');
+  const abonoRaw = parseInt(document.getElementById('fabono')?.value||'0')||0;
+  const paymethod = document.getElementById('fpaymethod')?.value || '';
+
+  if(!/^\d{4}$/.test(num)){showMsg('fmsg','err','Número inválido (0000–9999)');return;}
+  if(!name) {showMsg('fmsg','err','Ingresa el nombre');return;}
+  if(!phone){showMsg('fmsg','err','Ingresa el teléfono');return;}
+  if(!seller){showMsg('fmsg','err','Ingresa el vendedor');return;}
+  if(abonoRaw > TICKET_PRICE){showMsg('fmsg','err',`El abono no puede superar ${fmt(TICKET_PRICE)}`);return;}
+  if(DATA[num]){showMsg('fmsg','err',`#${num} ya vendido a ${DATA[num].name}`);return;}
+
+  // Si abono = precio completo, marcar como pagado automáticamente (solo admin puede confirmar)
+  const abonos = paid ? TICKET_PRICE : abonoRaw;
+  const abonosPending = (!paid && !paymentClaim && abonoRaw > 0 && session.role !== 'admin') ? abonoRaw : 0;
+  const abonosConfirmed = (session.role === 'admin' && abonoRaw > 0) ? abonoRaw : (paid ? TICKET_PRICE : 0);
+
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.textContent='Guardando…';
+
+  const r=await apiPost({
+    action:'register', token:session.role==='admin'?getAdminToken():getSellerToken(),
+    num, entry:{
+      name, phone, seller, paid, paymentClaim,
+      abonos: abonosConfirmed,
+      abonosPending: abonosPending,
+      paymethod,
+      date: new Date().toLocaleString('es')
+    }
+  });
+
+  btn.disabled=false; btn.textContent='✓ Registrar número';
+
+  if(r.ok){
+    logChange('register', num, {name, seller});
+    document.getElementById('fn').value='';
+    document.getElementById('fname').value='';
+    document.getElementById('fphone').value='';
+    document.getElementById('fabono').value='';
+    document.getElementById('fabono-hint').textContent='';
+    resetPayMethod('f');
+    if(session.role==='admin') document.getElementById('fpaid').value='0';
+    else resetPayClaim();
+    let stateMsg = paid ? '(pago confirmado)' : paymentClaim ? '(pago reportado)' : '';
+    if(!paid && abonoRaw > 0) stateMsg += ` — abono ${fmt(abonoRaw)} ${session.role==='admin'?'confirmado':'reportado'}`;
+    showMsg('fmsg','ok',`✓ Número #${num} registrado ${stateMsg}`);
+    toast(`#${num} vendido a ${name}`,'ok');
+    await loadData(true);
+  } else {
+    showMsg('fmsg','err', r.error||'Error al guardar');
+  }
+}
+
+// Tokens en memoria de sesión
+function getSellerToken(){ return session?.token || ''; }
+function getAdminToken(){  return session?.token || ''; }
+function getToken(){       return session?.token || ''; }
+
+// ── MODALS ──────────────────────────────────────────────────
+// ── ABONO BLOCK (inside detail modal) ─────────────────────
+function abonoBlock(num, e){
+  if(e.paid) return ''; // pagado completo — no mostrar
+  const abonado  = e.abonos || 0;
+  const pending  = e.abonosPending || 0;
+  const saldo    = Math.max(0, TICKET_PRICE - abonado);
+  const pct      = Math.min(100, Math.round(abonado / TICKET_PRICE * 100));
+  const isAdmin  = session && session.role === 'admin';
+
+  let pendingAlert = '';
+  if(pending > 0){
+    if(isAdmin){
+      pendingAlert = `
+        <div style="background:rgba(80,200,140,.08);border:1px solid rgba(80,200,140,.25);border-radius:8px;padding:.6rem .85rem;font-size:.8rem;color:var(--green);margin-top:.4rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <span>💰 Abono pendiente: <b>${fmt(pending)}</b></span>
+          <div style="display:flex;gap:.35rem">
+            <button class="btn btn-green btn-sm" onclick="confirmAbono('${num}')">✓ Confirmar</button>
+            <button class="btn btn-red btn-sm"   onclick="rejectAbono('${num}')">✗</button>
+          </div>
+        </div>`;
+    } else {
+      pendingAlert = `
+        <div style="background:rgba(80,200,140,.08);border:1px solid rgba(80,200,140,.25);border-radius:8px;padding:.55rem .85rem;font-size:.8rem;color:var(--green);margin-top:.4rem">
+          🕐 Abono de <b>${fmt(pending)}</b> reportado — pendiente de confirmación
+        </div>`;
+    }
+  }
+
+  const inputZone = isAdmin ? `
+    <div style="margin-top:.65rem">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:.3rem">Editar total abonado (admin):</div>
+      <div style="display:flex;gap:.4rem">
+        <input id="abono-admin-inp-${num}" type="text" inputmode="numeric"
+          value="${abonado}"
+          style="flex:1;font-family:'Space Mono',monospace;font-size:.85rem;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:.35rem .6rem;outline:none">
+        <button class="btn btn-gold btn-sm" onclick="setAbonoAdmin('${num}')">Guardar</button>
+      </div>
+    </div>` : `
+    <div style="margin-top:.65rem">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:.3rem">Reportar abono:</div>
+      <div style="display:flex;gap:.4rem">
+        <input id="abono-inp-${num}" type="text" inputmode="numeric" placeholder="Valor del abono"
+          style="flex:1;font-family:'Space Mono',monospace;font-size:.85rem;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:.35rem .6rem;outline:none"
+          ${pending > 0 ? 'disabled title="Ya tienes un abono pendiente de confirmación"' : ''}>
+        <button class="btn btn-green btn-sm" onclick="reportAbono('${num}')" ${pending > 0 ? 'disabled' : ''}>+ Abonar</button>
+      </div>
+      ${pending > 0 ? '' : `<div style="font-size:.7rem;color:var(--text3);margin-top:.2rem">Saldo por abonar: ${fmt(saldo)}</div>`}
+    </div>`;
+
+  return `
+    <div class="abono-bar">
+      <div class="abono-bar-title">💰 Abonos</div>
+      <div class="abono-progress"><div class="abono-progress-fill" style="width:${pct}%"></div></div>
+      <div class="abono-row">
+        <span class="lbl">Precio del billete</span>
+        <span class="val">${fmt(TICKET_PRICE)}</span>
+      </div>
+      <div class="abono-row">
+        <span class="lbl">Total abonado</span>
+        <span class="val" style="color:var(--green)">${fmt(abonado)}</span>
+      </div>
+      <div class="abono-row">
+        <span class="lbl">Saldo pendiente</span>
+        <span class="val" style="color:${saldo > 0 ? 'var(--red)' : 'var(--green)'}">${fmt(saldo)}</span>
+      </div>
+      ${pendingAlert}
+      ${inputZone}
+    </div>`;
+}
+
+function openD(num){
+  const e=DATA[num];
+  document.getElementById('dnum').textContent='#'+num;
+  let titleTxt, stateBadge;
+  if(e.paid)            { titleTxt='✅ Pago confirmado';   stateBadge=`<span class="pill pp">✅ Confirmado</span>`; }
+  else if(e.paymentClaim){ titleTxt='🕐 Pago reportado';  stateBadge=`<span class="pill pill-claim">🕐 Reportado por vendedor</span>`; }
+  else                  { titleTxt='⏳ Sin pagar';          stateBadge=`<span class="pill pu">⏳ Sin pagar</span>`; }
+  document.getElementById('dtitle').textContent=titleTxt;
+  document.getElementById('dbody').innerHTML=`
+    <div class="drow"><span class="dk">Nombre</span><span class="dv">${e.name}</span></div>
+    <div class="drow"><span class="dk">Teléfono</span><span class="dv">${e.phone}</span></div>
+    <div class="drow"><span class="dk">Vendedor</span><span class="dv">${e.seller}</span></div>
+    <div class="drow"><span class="dk">Estado</span><span class="dv">${stateBadge}</span></div>
+    <div class="drow"><span class="dk">Método pago</span><span class="dv">${
+      e.paymethod==='cash'     ? '💵 Efectivo' :
+      e.paymethod==='transfer' ? '🏦 Transferencia' :
+                                 '<span style="color:var(--text3)">— Sin especificar</span>'
+    }</span></div>
+    ${e.paymentClaim&&!e.paid?`<div style="background:rgba(240,184,64,0.08);border:1px solid rgba(240,184,64,0.25);border-radius:8px;padding:.6rem .85rem;font-size:.8rem;color:#c09020;margin-top:.5rem">
+      ⚠️ El vendedor reportó este pago — pendiente de confirmación por el administrador</div>`:''}
+    <div class="drow"><span class="dk">Fecha</span><span class="dv" style="font-size:.8rem">${e.date||''}</span></div>
+    ${abonoBlock(num, e)}
+  `;
+  const f=document.getElementById('dfoot'); f.innerHTML='';
+  const cb=document.createElement('button');
+  cb.className='btn btn-ghost'; cb.textContent='Cerrar'; cb.onclick=closeD;
+  f.appendChild(cb);
+  if(session&&session.role==='admin'){
+    const eb=document.createElement('button');
+    eb.className='btn btn-gold'; eb.textContent='✏️ Editar';
+    eb.onclick=()=>{closeD();openE(num);}; f.appendChild(eb);
+    if(e.paymentClaim&&!e.paid){
+      const ok=document.createElement('button');
+      ok.className='btn btn-green'; ok.textContent='✓ Confirmar pago';
+      ok.onclick=async()=>{closeD();await confirmPay(num);}; f.appendChild(ok);
+      const rej=document.createElement('button');
+      rej.className='btn btn-red'; rej.textContent='✗ Rechazar';
+      rej.onclick=async()=>{closeD();await rejectPay(num);}; f.appendChild(rej);
+    } else {
+      const pb=document.createElement('button');
+      pb.className=e.paid?'btn btn-ghost':'btn btn-green';
+      pb.textContent=e.paid?'↩ Desmarcar':'✓ Marcar pagado';
+      pb.onclick=async()=>{closeD();await togglePaid(num);}; f.appendChild(pb);
+    }
+  }
+  document.getElementById('md').classList.add('open');
+}
+function closeD(){document.getElementById('md').classList.remove('open')}
+
+function openR(num){
+  regNum=num;
+  document.getElementById('rnum-d').textContent='#'+num;
+  document.getElementById('rn').value=''; document.getElementById('rp').value='';
+  // Reset seller checkbox
+  const rw=document.getElementById('rpay-wrap');
+  if(rw){ rw.classList.remove('checked'); document.getElementById('rpd-claim').value='0'; }
+  const rs=document.getElementById('rpd'); if(rs) rs.value='0';
+  const ra=document.getElementById('rabono'); if(ra) ra.value='';
+  const rh=document.getElementById('rabono-hint'); if(rh) rh.textContent='';
+  resetPayMethod('r');
+  document.getElementById('rmsg').className='msg';
+  document.getElementById('mr').classList.add('open');
+  setTimeout(()=>document.getElementById('rn').focus(),80);
+}
+function closeR(){document.getElementById('mr').classList.remove('open');regNum=null;}
+
+async function regModal(){
+  const name =document.getElementById('rn').value.trim();
+  const phone=document.getElementById('rp').value.trim();
+  const abonoRaw = parseInt(document.getElementById('rabono')?.value||'0')||0;
+  const paymethod = document.getElementById('rpaymethod')?.value || '';
+  let paid=false, paymentClaim=false;
+  if(session.role==='admin'){
+    const v=(document.getElementById('rpd')||{value:'0'}).value;
+    paid=v==='1'; paymentClaim=v==='claim';
+  } else {
+    paymentClaim = document.getElementById('rpd-claim').value==='1';
+  }
+  if(!name) {showMsg('rmsg','err','Ingresa el nombre');return;}
+  if(!phone){showMsg('rmsg','err','Ingresa el teléfono');return;}
+  if(abonoRaw > TICKET_PRICE){showMsg('rmsg','err',`El abono no puede superar ${fmt(TICKET_PRICE)}`);return;}
+  if(DATA[regNum]){showMsg('rmsg','err','Este número ya fue vendido');return;}
+
+  const abonosPending   = (!paid && !paymentClaim && abonoRaw > 0 && session.role !== 'admin') ? abonoRaw : 0;
+  const abonosConfirmed = (session.role === 'admin' && abonoRaw > 0) ? abonoRaw : (paid ? TICKET_PRICE : 0);
+
+  const r=await apiPost({
+    action:'register', token:getToken(), num:regNum,
+    entry:{
+      name, phone, seller:session.name, paid, paymentClaim,
+      abonos: abonosConfirmed,
+      abonosPending: abonosPending,
+      paymethod,
+      date: new Date().toLocaleString('es')
+    }
+  });
+  if(r.ok){
+    logChange('register', regNum, {name, seller:session.name});
+    toast(`#${regNum} registrado`+(abonoRaw>0?` — abono ${fmt(abonoRaw)}`:''),'ok');
+    closeR();
+    await loadData(true);
+  } else showMsg('rmsg','err',r.error||'Error');
+}
+
+function openE(num){
+  editNum=num; const e=DATA[num];
+  document.getElementById('enum-d').textContent='#'+num;
+  document.getElementById('en').value=e.name;
+  document.getElementById('ep').value=e.phone;
+  document.getElementById('es').value=e.seller;
+  const epd=document.getElementById('epd');
+  if(e.paid) epd.value='1';
+  else if(e.paymentClaim) epd.value='claim';
+  else epd.value='0';
+  setPayMethod(e.paymethod||'none','e');
+  document.getElementById('emsg').className='msg';
+  document.getElementById('me').classList.add('open');
+}
+function closeE(){document.getElementById('me').classList.remove('open');editNum=null;}
+
+async function saveEdit(){
+  const name     = document.getElementById('en').value.trim();
+  const phone    = document.getElementById('ep').value.trim();
+  const seller   = document.getElementById('es').value.trim();
+  const v        = document.getElementById('epd').value;
+  const paid     = v==='1';
+  const paymentClaim = v==='claim';
+  const paymethod = document.getElementById('epaymethod')?.value || '';
+  if(!name||!phone||!seller){showMsg('emsg','err','Todos los campos requeridos');return;}
+  const r=await apiPost({
+    action:'edit', token:getAdminToken(), num:editNum,
+    entry:{name, phone, seller, paid, paymentClaim, paymethod}
+  });
+  if(r.ok){logChange('edit',editNum,{name,seller});toast(`#${editNum} actualizado`,'ok');closeE();await loadData(true);}
+  else showMsg('emsg','err',r.error||'Error');
+}
+
+// ── CONFIRM / REJECT PAYMENT (admin) ──────────────────────
+async function confirmPay(num){
+  const r=await apiPost({action:'confirmPay',token:getAdminToken(),num});
+  if(r.ok){logChange('confirmPay',num,DATA[num]);toast(`#${num} ✅ pago confirmado`,'ok');await loadData(true);}
+  else toast(r.error||'Error','err');
+}
+
+async function rejectPay(num){
+  const r=await apiPost({action:'rejectPay',token:getAdminToken(),num});
+  if(r.ok){logChange('rejectPay',num,DATA[num]);toast(`#${num} ✗ pago rechazado`,'err');await loadData(true);}
+  else toast(r.error||'Error','err');
+}
+
+// ── MÉTODO DE PAGO ────────────────────────────────────────
+function setPayMethod(val, prefix){
+  ['none','cash','transfer'].forEach(k=>{
+    const btn = document.getElementById(`${prefix}pm-${k}`);
+    if(btn) btn.classList.toggle('on', k===val);
+  });
+  const hidden = document.getElementById(`${prefix}paymethod`);
+  if(hidden) hidden.value = val === 'none' ? '' : val;
+}
+function resetPayMethod(prefix){
+  setPayMethod('none', prefix);
+}
+async function reportAbono(num){
+  const inp = document.getElementById(`abono-inp-${num}`);
+  const raw = inp ? inp.value.replace(/\D/g,'') : '';
+  const val = parseInt(raw);
+  if(!val||val<=0){ toast('Ingresa un valor válido','err'); return; }
+  const e = DATA[num];
+  const yaAbonado = (e.abonos||0) + (e.abonosPending||0);
+  const saldo = Math.max(0, TICKET_PRICE - yaAbonado);
+  if(saldo <= 0){ toast('Este número ya está completamente abonado','err'); return; }
+  if(val > saldo){ toast(`El abono supera el saldo disponible (${fmt(saldo)})`,'err'); return; }
+  const r = await apiPost({action:'reportAbono', token:getToken(), num, valor:val});
+  if(r.ok){
+    logChange('reportAbono', num, DATA[num], fmt(val));
+    toast(`Abono de ${fmt(val)} reportado — pendiente de confirmación`,'ok');
+    if(inp) inp.value='';
+    await loadData(true);
+    openD(num);
+  } else toast(r.error||'Error','err');
+}
+
+async function confirmAbono(num){
+  const r=await apiPost({action:'confirmAbono',token:getAdminToken(),num});
+  if(r.ok){ logChange('confirmAbono',num,DATA[num]); toast(`#${num} 💰 abono confirmado`,'ok'); await loadData(true); }
+  else toast(r.error||'Error','err');
+}
+async function rejectAbono(num){
+  const r=await apiPost({action:'rejectAbono',token:getAdminToken(),num});
+  if(r.ok){ logChange('rejectAbono',num,DATA[num]); toast(`#${num} abono rechazado`,''); await loadData(true); }
+  else toast(r.error||'Error','err');
+}
+async function setAbonoAdmin(num){
+  const inp = document.getElementById(`abono-admin-inp-${num}`);
+  const val = parseInt((inp?inp.value:'').replace(/\D/g,''));
+  if(isNaN(val)||val<0){ toast('Valor inválido','err'); return; }
+  const r = await apiPost({action:'setAbono',token:getAdminToken(),num,valor:val});
+  if(r.ok){ logChange('edit',num,DATA[num],`Abono manual ${fmt(val)}`); toast(`Abono actualizado a ${fmt(val)}`,'ok'); await loadData(true); openD(num); }
+  else toast(r.error||'Error','err');
+}
+
+// ── PAY CLAIM CHECKBOX TOGGLE (seller) ───────────────────
+function togglePayClaim(){
+  const wrap=document.getElementById('pay-claim-wrap');
+  const inp =document.getElementById('fpaid-claim');
+  const checked=wrap.classList.toggle('checked');
+  inp.value=checked?'1':'0';
+}
+function toggleRClaim(){
+  const wrap=document.getElementById('rpay-wrap');
+  const inp =document.getElementById('rpd-claim');
+  const checked=wrap.classList.toggle('checked');
+  inp.value=checked?'1':'0';
+}
+function resetPayClaim(){
+  const w=document.getElementById('pay-claim-wrap');
+  const i=document.getElementById('fpaid-claim');
+  if(w) w.classList.remove('checked');
+  if(i) i.value='0';
+}
+
+async function togglePaid(num){
+  const r=await apiPost({action:'togglePaid',token:getAdminToken(),num});
+  if(r.ok){logChange('togglePaid',num,DATA[num],r.paid?'→ pagado':'→ sin pagar');toast(`#${num} → ${r.paid?'pagado':'sin pagar'}`,r.paid?'ok':'');await loadData(true);}
+  else toast(r.error||'Error','err');
+}
+
+// ── DELETE WITH DOUBLE CONFIRM ────────────────────────────
+let delPendingNum = null;
+function confirmDel(num){
+  const e = DATA[num];
+  if(!e) return;
+  delPendingNum = num;
+  document.getElementById('del-modal-info').innerHTML =
+    `Vas a eliminar el número <strong style="font-family:'Space Mono',monospace;color:var(--gold)">#${num}</strong><br>
+     Comprador: <strong>${e.name}</strong><br>
+     <span style="color:var(--red);font-size:.8rem;margin-top:.4rem;display:block">
+     ⚠️ Esta acción no se puede deshacer</span>`;
+  document.getElementById('del-confirm-input').value = '';
+  document.getElementById('del-confirm-btn').disabled = true;
+  document.getElementById('del-modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('del-confirm-input').focus(), 80);
+}
+function closeDel(){
+  document.getElementById('del-modal-overlay').classList.remove('open');
+  delPendingNum = null;
+}
+async function executeDel(){
+  if(!delPendingNum) return;
+  const num = delPendingNum;
+  closeDel();
+  const r = await apiPost({action:'delete', token:getAdminToken(), num});
+  if(r.ok){
+    logChange('delete', num, DATA[num]);
+    toast(`#${num} eliminado`,'err');
+    await loadData(true);
+  } else toast(r.error||'Error','err');
+}
+
+// ── SEARCH ─────────────────────────────────────────────────
+function quickSearch(){
+  const inp = document.getElementById('qsi2');
+  const q   = inp.value.toLowerCase().trim();
+  const res = document.getElementById('qsr');
+
+  if(!q){ res.style.display='none'; return; }
+
+  // Posicionar el dropdown justo debajo del input
+  const rect = inp.getBoundingClientRect();
+  res.style.top  = (rect.bottom + 4) + 'px';
+  res.style.left = rect.left + 'px';
+  res.style.width= rect.width + 'px';
+
+  const m = Object.entries(DATA).filter(([num,e])=>
+    num.includes(q) ||
+    (e.name  &&e.name.toLowerCase().includes(q))  ||
+    (e.seller&&e.seller.toLowerCase().includes(q))||
+    (e.phone &&e.phone.includes(q))
+  ).slice(0,12);
+
+  if(!m.length){
+    res.innerHTML='<div class="qsi" style="color:var(--text3);cursor:default">Sin resultados</div>';
+    res.style.display='block'; return;
+  }
+
+  res.innerHTML = m.map(([num,e])=>{
+    const badge = e.paid
+      ? `<span class="pill pp">✅ Pagado</span>`
+      : e.paymentClaim
+        ? `<span class="pill pill-claim">🕐 Reportado</span>`
+        : `<span class="pill pu">⏳ Sin pagar</span>`;
+    return `
+      <div class="qsi" onclick="closeQsr();openD('${num}')">
+        <span style="font-family:'Space Mono',monospace;color:var(--gold);font-weight:700">#${num}</span>
+        <span style="margin-left:.5rem">${e.name}</span>
+        ${badge}
+        <div style="color:var(--text3);font-size:.74rem;margin-top:2px">${e.seller||''}</div>
+      </div>`;
+  }).join('');
+  res.style.display='block';
+}
+
+function closeQsr(){
+  document.getElementById('qsr').style.display='none';
+}
+
+// Cerrar búsqueda al hacer clic fuera
+document.addEventListener('click', e=>{
+  const inp=document.getElementById('qsi2');
+  const res=document.getElementById('qsr');
+  if(inp && res && !inp.contains(e.target) && !res.contains(e.target)){
+    res.style.display='none';
+  }
+});
+
+// ── EXPORT PDF ────────────────────────────────────────────
+function exportPDF(){
+  const entries = Object.entries(DATA).sort(([a],[b])=>a.localeCompare(b));
+  const sold    = entries.length;
+  const paid    = entries.filter(([,e])=>e.paid).length;
+  const claimed = entries.filter(([,e])=>e.paymentClaim&&!e.paid).length;
+  const unpaid  = sold - paid - claimed;
+  const now     = new Date().toLocaleString('es');
+
+  const payBadge = e => e.paid
+    ? `<span class="pbadge paid">✓ Pagado</span>`
+    : e.paymentClaim
+      ? `<span class="pbadge" style="background:#fff8d0;color:#a07000;border:1px solid #e0c040">🕐 Reportado</span>`
+      : `<span class="pbadge unpaid">⏳ Sin pagar</span>`;
+
+  // ── Agrupar por vendedor
+  const bySeller = {};
+  entries.forEach(([num,e])=>{
+    const s = e.seller || 'Sin asignar';
+    if(!bySeller[s]) bySeller[s]=[];
+    bySeller[s].push([num,e]);
+  });
+
+  // ── Tabla completa
+  const allRows = entries.map(([num,e])=>`
+    <tr>
+      <td><span class="print-num">${num}</span></td>
+      <td>${e.name}</td>
+      <td>${e.phone}</td>
+      <td>${e.seller||''}</td>
+      <td>${payBadge(e)}</td>
+      <td style="font-size:.72rem;color:#888">${e.date||''}</td>
+    </tr>`).join('');
+
+  // ── Lista sin pagar (incluye reportados)
+  const pendingRows = entries.filter(([,e])=>!e.paid).map(([num,e])=>`
+    <tr>
+      <td><span class="print-num">${num}</span></td>
+      <td>${e.name}</td>
+      <td>${e.phone}</td>
+      <td>${e.seller||''}</td>
+      <td>${payBadge(e)}</td>
+      <td style="font-size:.72rem;color:#888">${e.date||''}</td>
+    </tr>`).join('');
+
+  // ── Resumen por vendedor
+  const sellerRows = Object.entries(bySeller).sort().map(([seller,nums])=>{
+    const spaid    = nums.filter(([,e])=>e.paid).length;
+    const sclaimed = nums.filter(([,e])=>e.paymentClaim&&!e.paid).length;
+    const sunpaid  = nums.length - spaid - sclaimed;
+    return `
+    <div class="seller-section">
+      <div class="seller-name">
+        <span>${seller}</span>
+        <span style="font-weight:400;color:#555">
+          ${nums.length} vendidos — 
+          <span style="color:#1a7a3a">${spaid} pagados</span> — 
+          <span style="color:#a07000">${sclaimed} reportados</span> — 
+          <span style="color:#c03020">${sunpaid} sin pagar</span>
+        </span>
+      </div>
+      <table class="print-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Estado pago</th></tr></thead>
+        <tbody>
+          ${nums.map(([num,e])=>`<tr>
+            <td><span class="print-num">${num}</span></td>
+            <td>${e.name}</td><td>${e.phone}</td>
+            <td>${payBadge(e)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`}).join('');
+
+  const html = `
+    <!-- PÁGINA 1: Resumen general -->
+    <div class="print-page">
+      <div class="print-hdr">
+        <div>
+          <div class="print-title">Rifa <span>El Milagro</span></div>
+          <div style="color:#555;font-size:.85rem;margin-top:.25rem">Reporte General de Ventas</div>
+        </div>
+        <div class="print-meta">Generado: ${now}<br>Total de números: 10,000</div>
+      </div>
+      <div class="print-stats">
+        <div class="pstat gold"><div class="pv">${sold.toLocaleString()}</div><div class="pl">Vendidos</div></div>
+        <div class="pstat"><div class="pv">${(10000-sold).toLocaleString()}</div><div class="pl">Disponibles</div></div>
+        <div class="pstat green"><div class="pv">${paid.toLocaleString()}</div><div class="pl">Pagados</div></div>
+        <div class="pstat" style="border-color:#e0c040"><div class="pv" style="color:#a07000">${claimed.toLocaleString()}</div><div class="pl">Reportados</div></div>
+        <div class="pstat red"><div class="pv">${unpaid.toLocaleString()}</div><div class="pl">Sin pagar</div></div>
+      </div>
+      <div class="print-section-title">📊 Resumen por Vendedor</div>
+      ${sellerRows || '<p style="color:#888;font-size:.85rem">Sin registros aún</p>'}
+    </div>
+
+    <!-- PÁGINA 2: Tabla completa -->
+    <div class="print-page">
+      <div class="print-hdr">
+        <div><div class="print-title">Rifa <span>El Milagro</span></div>
+        <div style="color:#555;font-size:.85rem">Tabla Completa de Ventas</div></div>
+        <div class="print-meta">${now}</div>
+      </div>
+      <div class="print-section-title">🎟 Todos los Números Vendidos (${sold})</div>
+      ${sold > 0 ? `
+      <table class="print-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Vendedor</th><th>Pago</th><th>Fecha</th></tr></thead>
+        <tbody>${allRows}</tbody>
+      </table>` : '<p style="color:#888;font-size:.85rem">Sin registros aún</p>'}
+    </div>
+
+    <!-- PÁGINA 3: Pendientes de pago -->
+    <div class="print-page">
+      <div class="print-hdr">
+        <div><div class="print-title">Rifa <span>El Milagro</span></div>
+        <div style="color:#c03020;font-size:.85rem">⚠️ Pendientes de Cobro (${unpaid + claimed})</div></div>
+        <div class="print-meta">${now}</div>
+      </div>
+      <div class="print-section-title">⏳ Sin pagar + Reportados — Lista para Cobro</div>
+      ${(unpaid + claimed) > 0 ? `
+      <table class="print-table">
+        <thead><tr><th>#</th><th>Nombre</th><th>Teléfono</th><th>Vendedor</th><th>Estado</th><th>Fecha</th></tr></thead>
+        <tbody>${pendingRows}</tbody>
+      </table>` : '<p style="color:#1a7a3a;font-size:.9rem;padding:.5rem">✅ ¡Todos los números vendidos están pagados!</p>'}
+    </div>`;
+
+  const pa = document.getElementById('print-area');
+  pa.innerHTML = html;
+  pa.style.display = 'block';
+
+  // Esperar a que el DOM renderice antes de abrir el diálogo de impresión
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{ pa.style.display='none'; pa.innerHTML=''; }, 1500);
+    }, 300);
+  });
+}
+
+// ── IMPORT CSV ─────────────────────────────────────────────
+let importData = [];
+
+function openImport(){
+  importData = [];
+  document.getElementById('import-preview').style.display='none';
+  document.getElementById('import-preview').innerHTML='';
+  document.getElementById('import-file').value='';
+  document.getElementById('import-msg').className='msg';
+  document.getElementById('import-confirm').style.display='none';
+  document.getElementById('mi').classList.add('open');
+}
+function closeImport(){ document.getElementById('mi').classList.remove('open'); importData=[]; }
+
+function handleImportFile(e){
+  const file = e.target.files[0] || (e.dataTransfer && e.dataTransfer.files[0]);
+  if(!file) return;
+  const reader2 = new FileReader();
+  reader2.onload = ev => parseCSV(ev.target.result);
+  reader2.readAsText(file, 'UTF-8');
+}
+
+function parseCSV(text){
+  // Limpiar BOM
+  text = text.replace(/^\uFEFF/,'');
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length < 2){ showMsg('import-msg','err','El archivo está vacío o no tiene datos'); return; }
+
+  // Detectar separador
+  const sep = lines[0].includes(';') ? ';' : ',';
+  const header = lines[0].split(sep).map(h=>h.replace(/^"|"$/g,'').toLowerCase().trim());
+
+  // Mapear columnas
+  const iNum    = header.findIndex(h=>h.includes('n') && (h.includes('mero')||h.includes('úmero')||h==='#'||h==='num'));
+  const iName   = header.findIndex(h=>h.includes('nombre'));
+  const iPhone  = header.findIndex(h=>h.includes('tel') || h.includes('phone') || h.includes('cel'));
+  const iSeller = header.findIndex(h=>h.includes('vend'));
+  const iPaid   = header.findIndex(h=>h.includes('pag') || h.includes('paid'));
+
+  if(iNum===-1||iName===-1){
+    showMsg('import-msg','err','No se encontró columna "Número" o "Nombre" en el CSV');
+    return;
+  }
+
+  importData = [];
+  const preview = [];
+
+  for(let i=1;i<lines.length;i++){
+    const cols = lines[i].split(sep).map(c=>c.replace(/^"|"$/g,'').trim());
+    const rawNum = cols[iNum]||'';
+    const num    = rawNum.padStart(4,'0');
+    const name   = cols[iName]||'';
+    const phone  = iPhone>=0 ? (cols[iPhone]||'') : '';
+    const seller = iSeller>=0 ? (cols[iSeller]||'') : (session?session.name:'');
+    const paidRaw= iPaid>=0 ? (cols[iPaid]||'') : '';
+    const paid   = /^(s[ií]|1|true|pagado|yes)/i.test(paidRaw);
+
+    if(!rawNum||!name){ preview.push({num,name,status:'err',msg:'Número o nombre vacío'}); continue; }
+    if(!/^\d{4}$/.test(num)){ preview.push({num,name,status:'err',msg:'Número inválido'}); continue; }
+    if(DATA[num]){ preview.push({num,name,status:'skip',msg:`Ya existe (${DATA[num].name})`}); continue; }
+
+    importData.push({num,name,phone,seller,paid,date:new Date().toLocaleString('es')});
+    preview.push({num,name,phone,seller,paid,status:'ok',msg:'Listo para importar'});
+  }
+
+  const ok   = preview.filter(p=>p.status==='ok').length;
+  const skip = preview.filter(p=>p.status==='skip').length;
+  const err  = preview.filter(p=>p.status==='err').length;
+
+  const pv = document.getElementById('import-preview');
+  pv.innerHTML = preview.map(p=>`
+    <div class="imp-row">
+      <span class="imp-${p.status}" style="font-family:monospace;font-weight:700;min-width:50px">#${p.num}</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
+      <span class="imp-${p.status}" style="font-size:.72rem;white-space:nowrap">${p.msg}</span>
+    </div>`).join('');
+  pv.style.display = 'block';
+
+  const btn = document.getElementById('import-confirm');
+  if(ok > 0){
+    btn.textContent = `⬆ Importar ${ok} registro${ok!==1?'s':''}`;
+    btn.style.display = '';
+    showMsg('import-msg','ok',`${ok} para importar · ${skip} ya existen · ${err} con error`);
+  } else {
+    btn.style.display = 'none';
+    showMsg('import-msg','err',`No hay registros válidos (${skip} ya existen, ${err} con error)`);
+  }
+}
+
+async function confirmImport(){
+  if(!importData.length) return;
+  const btn = document.getElementById('import-confirm');
+  btn.disabled=true; btn.textContent='Importando…';
+
+  let ok=0, fail=0;
+  for(const entry of importData){
+    try{
+      await apiPost({action:'register',token:getToken(),num:entry.num,
+        entry:{
+          name:entry.name, phone:entry.phone, seller:entry.seller,
+          paid:entry.paid, paymentClaim:false,
+          abonos: entry.paid ? TICKET_PRICE : 0,
+          abonosPending: 0,
+          paymethod: '',
+          date:entry.date
+        }});
+      ok++;
+    } catch(e){ fail++; }
+    // Pequeña pausa para no saturar el script
+    await new Promise(r=>setTimeout(r,150));
+  }
+
+  btn.disabled=false;
+  toast(`${ok} registros importados${fail?` · ${fail} errores`:''}`, ok>0?'ok':'err');
+  closeImport();
+  await loadData(true);
+}
+
+// Drag & drop
+// ── GESTIONAR VENDEDORES (admin) ───────────────────────────
+let editSellerIdx = null;
+
+function openSellers(){
+  editSellerIdx = null;
+  clearSellerForm();
+  document.getElementById('sellers-msg').className='msg';
+  document.getElementById('ms').classList.add('open');
+  // Cargar vendedores desde el servidor
+  apiPost({ action:'getSellers', token:getAdminToken() }).then(r => {
+    if(r.ok && r.sellers) {
+      SELLERS = r.sellers.map(s => ({ name:s.name, user:s.user, pass:s.pass }));
+    }
+    renderSellersList();
+    setTimeout(()=>document.getElementById('ns-name').focus(), 80);
+  }).catch(() => {
+    renderSellersList();
+    setTimeout(()=>document.getElementById('ns-name').focus(), 80);
+  });
+}
+function closeSellers(){ document.getElementById('ms').classList.remove('open'); editSellerIdx=null; }
+
+function clearSellerForm(){
+  document.getElementById('ns-name').value='';
+  document.getElementById('ns-phone').value='';
+  document.getElementById('ns-user').value='';
+  document.getElementById('ns-pass').value='';
+  document.getElementById('seller-form-title').textContent='➕ Agregar vendedor';
+  document.getElementById('cancel-edit-btn').style.display='none';
+  editSellerIdx = null;
+}
+
+function renderSellersList(){
+  const el = document.getElementById('sellers-list');
+  if(!SELLERS.length){
+    el.innerHTML=`<div style="padding:1rem;text-align:center;color:var(--text3);font-size:.85rem">Sin vendedores — agrega el primero abajo</div>`;
+    return;
+  }
+  el.innerHTML = SELLERS.map((s,i)=>`
+    <div class="seller-item">
+      <div>
+        <div style="font-weight:600;font-size:.88rem">👤 ${s.name}</div>
+        <div style="font-size:.74rem;color:var(--text3);margin-top:1px">
+          ${s.phone ? `📞 <span style="color:var(--text2)">${s.phone}</span> &nbsp;·&nbsp; ` : ''}
+          usuario: <span style="color:var(--blue);font-family:monospace">${s.user}</span>
+          &nbsp;·&nbsp; contraseña: <span style="color:var(--text2);font-family:monospace">${s.pass}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:.35rem;flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" onclick="editSeller(${i})" title="Editar">✏️</button>
+        <button class="btn btn-red btn-sm"   onclick="deleteSeller(${i})" title="Eliminar">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function editSeller(i){
+  editSellerIdx = i;
+  const s = SELLERS[i];
+  document.getElementById('ns-name').value = s.name;
+  document.getElementById('ns-phone').value = s.phone || '';
+  document.getElementById('ns-user').value = s.user;
+  document.getElementById('ns-pass').value = s.pass;
+  document.getElementById('seller-form-title').textContent = `✏️ Editando: ${s.name}`;
+  document.getElementById('cancel-edit-btn').style.display = '';
+  document.getElementById('ns-name').focus();
+}
+
+function cancelEditSeller(){ clearSellerForm(); }
+
+function saveSeller(){
+  const name  = document.getElementById('ns-name').value.trim();
+  const phone = document.getElementById('ns-phone').value.trim();
+  const user  = document.getElementById('ns-user').value.trim().toLowerCase().replace(/\s+/g,'.');
+  const pass  = document.getElementById('ns-pass').value.trim();
+  if(!name){ showMsg('sellers-msg','err','Escribe el nombre completo'); return; }
+  if(!user){ showMsg('sellers-msg','err','Escribe un usuario'); return; }
+  if(!pass){ showMsg('sellers-msg','err','Escribe una contraseña'); return; }
+  if(pass.length < 4){ showMsg('sellers-msg','err','La contraseña debe tener al menos 4 caracteres'); return; }
+
+  // Verificar que usuario no esté duplicado
+  const dupIdx = SELLERS.findIndex((s,i) => s.user === user && i !== editSellerIdx);
+  if(dupIdx >= 0){ showMsg('sellers-msg','err',`El usuario "${user}" ya existe`); return; }
+
+  const payload = editSellerIdx !== null
+    ? { action:'saveSeller', token:getAdminToken(), sellerName:name, sellerPhone:phone, sellerUser:user, sellerPass:pass, editUser: SELLERS[editSellerIdx].user }
+    : { action:'saveSeller', token:getAdminToken(), sellerName:name, sellerPhone:phone, sellerUser:user, sellerPass:pass };
+
+  apiPost(payload).then(r => {
+    if(!r.ok){ showMsg('sellers-msg','err', r.error || 'Error al guardar'); return; }
+    if(editSellerIdx !== null){
+      SELLERS[editSellerIdx] = { name, phone, user, pass };
+      showMsg('sellers-msg','ok',`✓ ${name} actualizado`);
+      toast(`Vendedor "${name}" actualizado`,'ok');
+    } else {
+      SELLERS.push({ name, phone, user, pass });
+      showMsg('sellers-msg','ok',`✓ ${name} agregado`);
+      toast(`Vendedor "${name}" agregado`,'ok');
+    }
+    clearSellerForm();
+    renderSellersList();
+  }).catch(e => {
+    showMsg('sellers-msg','err','Error de conexión');
+  });
+}
+
+function deleteSeller(i){
+  const s = SELLERS[i];
+  if(!confirm(`¿Eliminar a "${s.name}" (usuario: ${s.user})?\n\nSus ventas registradas no se borran.`)) return;
+  apiPost({ action:'deleteSeller', token:getAdminToken(), sellerUser: s.user }).then(r => {
+    if(!r.ok){ toast(r.error || 'Error al eliminar','err'); return; }
+    SELLERS.splice(i,1);
+    if(editSellerIdx === i) clearSellerForm();
+    renderSellersList();
+    toast(`"${s.name}" eliminado`,'');
+  }).catch(() => toast('Error de conexión','err'));
+}
+
+function setupDrop(){
+  const dz = document.getElementById('drop-zone');
+  if(!dz) return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault(); dz.classList.remove('drag');
+    handleImportFile({dataTransfer:e.dataTransfer});
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// ── PROTECCIÓN 1: HISTORIAL DE CAMBIOS ────────────────────
+// ══════════════════════════════════════════════════════════
+const CL_KEY = 'rifa_changelog';
+const CL_MAX = 500; // máx entradas a guardar
+
+function logChange(action, num, entry, extra=''){
+  try {
+    const log = JSON.parse(localStorage.getItem(CL_KEY)||'[]');
+    const labels = {
+      register:'Registro', edit:'Edición', delete:'Eliminación',
+      confirmPay:'Pago confirmado', rejectPay:'Pago rechazado',
+      reportPay:'Pago reportado',
+      confirmAbono:'Abono confirmado', rejectAbono:'Abono rechazado',
+      reportAbono:'Abono reportado', togglePaid:'Cambio pago'
+    };
+    log.unshift({
+      ts: new Date().toISOString(),
+      action,
+      label: labels[action]||action,
+      num,
+      name:  entry?.name  || '',
+      seller:entry?.seller || session?.name || '',
+      user:  session?.name || '?',
+      role:  session?.role || '?',
+      extra
+    });
+    if(log.length > CL_MAX) log.splice(CL_MAX);
+    localStorage.setItem(CL_KEY, JSON.stringify(log));
+  } catch(e){}
+}
+
+function openCL(){
+  renderCL();
+  document.getElementById('mcl').classList.add('open');
+}
+function closeCL(){ document.getElementById('mcl').classList.remove('open'); }
+
+function renderCL(){
+  const log = JSON.parse(localStorage.getItem(CL_KEY)||'[]');
+  const el  = document.getElementById('cl-list');
+  if(!log.length){
+    el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text3)">Sin registros aún</div>';
+    return;
+  }
+  const actionClass = {
+    register:'ca-register', edit:'ca-edit', delete:'ca-delete',
+    confirmPay:'ca-pay', rejectPay:'ca-pay', togglePaid:'ca-pay',
+    confirmAbono:'ca-abono', rejectAbono:'ca-abono', reportAbono:'ca-abono'
+  };
+  el.innerHTML = log.map(r=>{
+    const d = new Date(r.ts);
+    const fecha = d.toLocaleDateString('es',{day:'2-digit',month:'2-digit'}) +
+                  ' ' + d.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="changelog-row">
+      <span class="changelog-num">#${r.num||'—'}</span>
+      <span style="flex:1;min-width:0">
+        <span class="changelog-action ${actionClass[r.action]||'ca-edit'}">${r.label}</span>
+        <strong>${r.name||''}</strong>
+        ${r.extra?`<span style="color:var(--text3)"> · ${r.extra}</span>`:''}
+        <div style="color:var(--text3);font-size:.72rem;margin-top:.15rem">
+          ${fecha} · ${r.user} (${r.role})${r.seller&&r.seller!==r.user?' · vendedor: '+r.seller:''}
+        </div>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function exportChangelogCSV(){
+  const log = JSON.parse(localStorage.getItem(CL_KEY)||'[]');
+  if(!log.length){ toast('Historial vacío','err'); return; }
+  const rows = [['Fecha','Acción','Número','Nombre','Vendedor','Usuario','Rol','Detalle']];
+  log.forEach(r=>rows.push([
+    new Date(r.ts).toLocaleString('es'), r.label, r.num, r.name,
+    r.seller, r.user, r.role, r.extra
+  ]));
+  const csv = rows.map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'historial_rifa_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); toast('Historial exportado','ok');
+}
+
+function clearChangelog(){
+  if(!confirm('¿Borrar todo el historial? No se puede recuperar.')) return;
+  localStorage.removeItem(CL_KEY);
+  renderCL();
+  toast('Historial borrado','');
+}
+
+// ══════════════════════════════════════════════════════════
+// ── PROTECCIÓN 2: MODO OFFLINE + COLA DE SINCRONIZACIÓN ───
+// ══════════════════════════════════════════════════════════
+const QUEUE_KEY  = 'rifa_offline_queue';
+let isOnline     = navigator.onLine;
+
+function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]'); }catch(e){return[];} }
+function saveQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+function queueSize(){ return getQueue().length; }
+
+function updateOfflineBanner(){
+  const banner = document.getElementById('offline-banner');
+  const qc     = document.getElementById('offline-queue-count');
+  if(!isOnline){
+    const n = queueSize();
+    qc.textContent = n > 0 ? `(${n} pendiente${n!==1?'s':''})` : '';
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+window.addEventListener('online',  async ()=>{ isOnline=true;  updateOfflineBanner(); await flushQueue(); });
+window.addEventListener('offline', ()=>{ isOnline=false; updateOfflineBanner(); });
+
+async function flushQueue(){
+  const q = getQueue();
+  if(!q.length) return;
+  toast(`↑ Sincronizando ${q.length} cambio${q.length!==1?'s':''}…`,'');
+  let failed = [];
+  for(const item of q){
+    try {
+      const r = await apiPost(item.payload, /*skipQueue=*/true);
+      if(!r.ok) failed.push(item);
+      else if(item.logArgs) logChange(...item.logArgs);
+    } catch(e){ failed.push(item); }
+    await new Promise(r=>setTimeout(r,200));
+  }
+  saveQueue(failed);
+  updateOfflineBanner();
+  if(failed.length === 0){
+    toast('✅ Todos los cambios sincronizados','ok');
+    await loadData(true);
+  } else {
+    toast(`⚠️ ${failed.length} cambio${failed.length!==1?'s':''} sin sincronizar`,'err');
+  }
+}
+
+// Wrapper de apiPost con soporte offline
+const _origApiPost = apiPost;
+async function apiPostSafe(payload, logArgs=null){
+  if(isOnline){
+    const r = await apiPost(payload);
+    if(r.ok && logArgs) logChange(...logArgs);
+    return r;
+  } else {
+    // Guardar en cola offline
+    const q = getQueue();
+    q.push({ payload, logArgs, ts: new Date().toISOString() });
+    saveQueue(q);
+    updateOfflineBanner();
+    // Simular respuesta ok para que la UI siga funcionando
+    // Actualizar DATA local inmediatamente
+    if(payload.action === 'register' && payload.entry){
+      DATA[payload.num] = { ...payload.entry, _offline:true };
+      renderCurrent();
+    }
+    toast('Sin conexión — cambio guardado localmente','');
+    return { ok:true, offline:true };
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ── PROTECCIÓN 3: BACKUP AUTOMÁTICO DIARIO ────────────────
+// ══════════════════════════════════════════════════════════
+const BACKUP_KEY = 'rifa_last_backup';
+
+function checkAutoBackup(){
+  if(session?.role !== 'admin') return;
+  const last = localStorage.getItem(BACKUP_KEY);
+  const hoy  = new Date().toDateString();
+  if(last === hoy) return; // ya se hizo hoy
+  // Mostrar aviso no intrusivo a los 3 segundos de entrar
+  setTimeout(()=>{
+    const n = Object.keys(DATA).length;
+    if(n === 0) return;
+    toast(`💾 Recuerda hacer backup diario (${n} registros)`, 'ok', 6000);
+    // Programar descarga automática si hay datos
+    if(n > 0) triggerAutoBackup();
+  }, 3000);
+}
+
+function triggerAutoBackup(){
+  const hoy = new Date().toDateString();
+  localStorage.setItem(BACKUP_KEY, hoy);
+  exportCSV(/*auto=*/true);
+}
+
+// ══════════════════════════════════════════════════════════
+
+// ── EXPORT CSV ─────────────────────────────────────────────
+function exportCSV(auto=false){
+  const rows=[['Número','Nombre','Teléfono','Vendedor','Estado pago','Método pago','Abonado (€)','Pendiente abono (€)','Saldo (€)','Fecha']];
+  Object.entries(DATA).sort(([a],[b])=>a.localeCompare(b)).forEach(([num,e])=>{
+    const abonado = e.abonos||0;
+    const pending = e.abonosPending||0;
+    const saldo   = Math.max(0, TICKET_PRICE - abonado);
+    const estado  = e.paid ? 'Pagado' : e.paymentClaim ? 'Pago reportado' : abonado>0 ? 'Abonado parcial' : 'Sin pagar';
+    const metodo  = e.paymethod==='cash' ? 'Efectivo' : e.paymethod==='transfer' ? 'Transferencia' : '';
+    rows.push([num, e.name, e.phone, e.seller, estado, metodo, abonado, pending, saldo, e.date||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  const suffix = auto ? '_backup_auto' : '';
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`rifa_el_milagro${suffix}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast(auto ? `💾 Backup automático descargado (${Object.keys(DATA).length} registros)` : 'CSV descargado','ok');
+}
+
+// ── VIEW ────────────────────────────────────────────────────
+function setView(v,btn){
+  curView=v;
+  document.getElementById('vg').style.display=v==='grid'?'':'none';
+  document.getElementById('vt').style.display=v==='table'?'':'none';
+  document.getElementById('vs').style.display=v==='sellers'?'':'none';
+  document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  if(v==='grid')         renderGrid();
+  else if(v==='table')   renderTable();
+  else if(v==='sellers') renderSellers();
+}
+function renderCurrent(){
+  updateStats();
+  if(curView==='grid')    renderGrid();
+  else if(curView==='table')   renderTable();
+  else if(curView==='sellers') renderSellers();
+}
+
+// ── SELLERS VIEW ────────────────────────────────────────────
+function renderSellers(){
+  const grid = document.getElementById('sv-grid');
+  const entries = Object.entries(DATA);
+
+  // Agrupar por vendedor
+  const bySeller = {};
+  entries.forEach(([num,e])=>{
+    const s = e.seller || 'Sin asignar';
+    if(!bySeller[s]) bySeller[s] = [];
+    bySeller[s].push([num,e]);
+  });
+
+  if(!Object.keys(bySeller).length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text3)">
+      Sin ventas registradas aún</div>`;
+    return;
+  }
+
+  grid.innerHTML = Object.entries(bySeller)
+    .sort(([a],[b])=>a.localeCompare(b))
+    .map(([seller, nums])=>{
+      const total   = nums.length;
+      const paid    = nums.filter(([,e])=>e.paid).length;
+      const claimed = nums.filter(([,e])=>e.paymentClaim&&!e.paid).length;
+      const unpaid  = total - paid - claimed;
+
+      const numBadges = nums
+        .sort(([a],[b])=>a.localeCompare(b))
+        .map(([num,e])=>{
+          const cls = e.paid ? 'paid' : e.paymentClaim ? 'claimed' : 'unpaid';
+          return `<span class="sv-num ${cls}" onclick="openD('${num}')" title="${e.name}">${num}</span>`;
+        }).join('');
+
+      return `
+        <div class="sv-card">
+          <div class="sv-head">
+            <div class="sv-name">👤 ${seller}</div>
+            <span class="pill ps">${total} número${total!==1?'s':''}</span>
+          </div>
+          <div class="sv-stats">
+            <div class="sv-stat"><div class="n" style="color:var(--gold)">${total}</div><div class="l">Total</div></div>
+            <div class="sv-stat"><div class="n" style="color:var(--green)">${paid}</div><div class="l">Pagados</div></div>
+            <div class="sv-stat"><div class="n" style="color:#f0b840">${claimed}</div><div class="l">Reportados</div></div>
+            <div class="sv-stat"><div class="n" style="color:var(--blue)">${unpaid}</div><div class="l">Sin pagar</div></div>
+          </div>
+          <div class="sv-nums">${numBadges}</div>
+        </div>`;
+    }).join('');
+}
+
+// ── KEYBOARD ────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeD();closeE();closeR();closeDel();closeCL();closeSD();}
+  if(e.key==='Enter'&&document.getElementById('mr').classList.contains('open')) regModal();
+});
+
+// ── INIT ────────────────────────────────────────────────────
+// Verificar que el script esté configurado
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash');
+  const msg    = document.getElementById('splash-msg');
+
+  if (DEMO_MODE) {
+    msg.textContent = 'Modo demo activo…';
+    setTimeout(() => {
+      splash.style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      const banner = document.createElement('div');
+      banner.style.cssText = 'margin-top:1rem;padding:.65rem .9rem;background:rgba(240,184,64,.1);border:1px solid rgba(240,184,64,.3);border-radius:8px;font-size:.78rem;color:#c09020;text-align:center;line-height:1.9';
+      banner.innerHTML = `🧪 <strong>MODO DEMO</strong> — Datos locales, se borran al recargar<br>
+        <span style="color:var(--text3)">
+          Vendedor: usuario <b style="color:var(--gold);font-family:monospace">ana.lopez</b> · contraseña <b style="color:var(--gold);font-family:monospace">rifa001</b><br>
+          Admin: <b style="color:var(--gold);font-family:monospace">admin123</b>
+        </span>`;
+      document.querySelector('.lcard').appendChild(banner);
+    }, 600);
+    return;
+  }
+
+  msg.textContent = 'Verificando conexión…';
+  apiGet('action=ping').then(r => {
+    if (r && r.ok) {
+      splash.style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    } else {
+      throw new Error('ping failed');
+    }
+  }).catch(() => {
+    msg.textContent = '';
+    splash.innerHTML = `
+      <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800">
+        Rifa <span style="color:var(--gold)">El Milagro</span>
+      </div>
+      <div style="color:var(--red);font-size:.88rem;max-width:300px;text-align:center;line-height:1.7">
+        ⚠️ No se puede conectar al servidor<br>
+        <span style="color:var(--text3);font-size:.8rem">
+          Verifica que el Google Apps Script esté publicado correctamente
+        </span>
+      </div>
+      <button onclick="location.reload()" style="margin-top:.5rem;padding:.5rem 1.2rem;
+        background:var(--gold);color:#0d0e14;border:none;border-radius:8px;
+        font-family:'Outfit',sans-serif;font-weight:600;cursor:pointer">
+        Reintentar
+      </button>`;
+  });
+});
+
+// ── NÚMEROS DISPONIBLES ────────────────────────────────
+let _allDisponibles = [];
+
+function openNumDisponibles(){
+  const overlay = document.getElementById('modal-disponibles-overlay');
+  overlay.style.display = 'flex';
+
+  // Calcular disponibles: todos los números del 0001 al 10000 que no estén en DATA
+  const ocupados = new Set(Object.keys(DATA));
+  _allDisponibles = [];
+  for(let i = 1; i <= 10000; i++){
+    const n = String(i).padStart(4,'0');
+    if(!ocupados.has(n)) _allDisponibles.push(n);
+  }
+
+  document.getElementById('disp-count').textContent =
+    _allDisponibles.length + ' de 10000 disponibles';
+  renderDisponibles(_allDisponibles);
+}
+
+function closeNumDisponibles(){
+  document.getElementById('modal-disponibles-overlay').style.display = 'none';
+}
+
+function filterDisponibles(val){
+  const q = val.trim();
+  if(!q){ renderDisponibles(_allDisponibles); return; }
+  const filtered = _allDisponibles.filter(n => n.includes(q));
+  renderDisponibles(filtered);
+}
+
+function renderDisponibles(lista){
+  const container = document.getElementById('disp-list');
+  if(lista.length === 0){
+    container.innerHTML = '<div style="color:var(--text3);font-size:.85rem;width:100%;text-align:center;padding:1rem">No hay números disponibles con ese criterio</div>';
+    return;
+  }
+  container.innerHTML = lista.map(n =>
+    `<div onclick="seleccionarDisponible('${n}')"
+      style="background:var(--bg);border:1px solid var(--borde);border-radius:6px;
+      padding:.35rem .6rem;font-family:'Space Mono',monospace;font-size:.82rem;
+      color:var(--green);cursor:pointer;transition:background .15s"
+      onmouseover="this.style.background='var(--card2)'"
+      onmouseout="this.style.background='var(--bg)'">${n}</div>`
+  ).join('');
+}
+
+function seleccionarDisponible(num){
+  // Poner el número en el buscador del vendedor y comprobar
+  const input = document.getElementById('sn-num');
+  if(input){
+    input.value = num;
+    checkSellerNum();
+  }
+  closeNumDisponibles();
+  // Scroll al buscador
+  input && input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+<!-- MODAL NÚMEROS DISPONIBLES -->
+<div id="modal-disponibles-overlay" onclick="if(event.target===this)closeNumDisponibles()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
+  align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--card);border-radius:14px;border:1px solid var(--borde);
+    width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--borde);
+      display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:700;color:var(--gold)">📋 Números disponibles</div>
+        <div style="font-size:.78rem;color:var(--text3)" id="disp-count"></div>
+      </div>
+      <button class="xbtn" onclick="closeNumDisponibles()">✕</button>
+    </div>
+    <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--borde)">
+      <input type="text" inputmode="numeric" placeholder="Buscar número..."
+        oninput="filterDisponibles(this.value)"
+        style="width:100%;background:var(--bg);border:1px solid var(--borde);border-radius:8px;
+        padding:.5rem .75rem;color:var(--text1);font-size:.9rem;outline:none">
+    </div>
+    <div id="disp-list" style="overflow-y:auto;padding:.75rem 1.25rem;
+      display:flex;flex-wrap:wrap;gap:.4rem"></div>
+  </div>
+</div>
+
+</body>
+</html>
